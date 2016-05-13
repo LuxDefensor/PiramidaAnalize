@@ -162,6 +162,7 @@
     <Content Include="32.32.32.P2kClient.exe.00001.ico" />
     <Content Include="PiramidaAnalize.cd" />
     <Content Include="Resources\16.16.04.shell32.dll.00031.ico" />
+    <None Include="Resources\refresh.jpg" />
     <None Include="Resources\Print.PNG" />
     <None Include="Resources\32.32.04.shell32.dll.00127.ico" />
     <None Include="Resources\16.16.32.shell32.dll.00874.ico" />

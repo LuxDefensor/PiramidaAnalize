@@ -63,6 +63,7 @@ namespace PiramidaAnalize
             this.txtDeviceID = new System.Windows.Forms.TextBox();
             this.calMap = new System.Windows.Forms.MonthCalendar();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+            this.cmdRefresh = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvSensors)).BeginInit();
             this.tabs.SuspendLayout();
             this.tabSensors.SuspendLayout();
@@ -365,11 +366,24 @@ namespace PiramidaAnalize
             this.imageList1.Images.SetKeyName(8, "iconPurple.png");
             this.imageList1.Images.SetKeyName(9, "iconSwamp.png");
             // 
+            // cmdRefresh
+            // 
+            this.cmdRefresh.BackgroundImage = global::PiramidaAnalize.Properties.Resources.refresh;
+            this.cmdRefresh.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.cmdRefresh.Location = new System.Drawing.Point(188, 15);
+            this.cmdRefresh.Name = "cmdRefresh";
+            this.cmdRefresh.Size = new System.Drawing.Size(51, 52);
+            this.cmdRefresh.TabIndex = 5;
+            this.cmdRefresh.TabStop = false;
+            this.cmdRefresh.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.cmdRefresh.UseVisualStyleBackColor = true;
+            // 
             // frmObjects
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(871, 571);
+            this.Controls.Add(this.cmdRefresh);
             this.Controls.Add(this.calMap);
             this.Controls.Add(this.txtDeviceID);
             this.Controls.Add(this.tabs);
@@ -420,5 +434,6 @@ namespace PiramidaAnalize
         private System.Windows.Forms.Button cmdSelectAll;
         private System.Windows.Forms.RadioButton opt101;
         private System.Windows.Forms.RadioButton opt12;
+        private System.Windows.Forms.Button cmdRefresh;
     }
 }

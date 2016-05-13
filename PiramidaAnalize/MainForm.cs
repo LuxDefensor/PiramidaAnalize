@@ -129,6 +129,11 @@ namespace PiramidaAnalize
 		void MainFormLoad(object sender, EventArgs e)
 		{
 			this.WindowState = FormWindowState.Maximized;
+            DataProvider d = new DataProvider();
+            if (!d.TestConnection())
+                MessageBox.Show("Приложению не удалось соединиться с базой данных Piramida2000\n" +
+                    "Проверьте параметры соединения и доступность SQL сервера",
+                    "Нет связи с базой данных", MessageBoxButtons.OK, MessageBoxIcon.Error);
 		}
 
         private void mnuMap_Click(object sender, EventArgs e)

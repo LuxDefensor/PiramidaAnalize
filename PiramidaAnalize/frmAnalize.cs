@@ -182,11 +182,13 @@ namespace PiramidaAnalize
                 long sensorID;
                 long.TryParse(stringSensorID, out sensorID);
                 d.ProfileForms(dgvSensors, sensorID, cal1.SelectionStart, cal2.SelectionStart);
+                lblCurrent.Text = mainTree.SelectedNode.FullPath;
             }
             else
             {
                 dgvSensors.DataMember = "";
                 dgvSensors.DataSource = "";
+                lblCurrent.Text = "";
             }
             this.Cursor = Cursors.Default;
 		}

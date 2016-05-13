@@ -37,7 +37,7 @@ namespace PiramidaAnalize
 		private void InitializeComponent()
 		{
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmAnalize));
             this.dgvSensors = new System.Windows.Forms.DataGridView();
             this.mainTree = new System.Windows.Forms.TreeView();
@@ -52,6 +52,9 @@ namespace PiramidaAnalize
             this.txtCal1 = new System.Windows.Forms.TextBox();
             this.txtCal2 = new System.Windows.Forms.TextBox();
             this.table1 = new System.Windows.Forms.TableLayoutPanel();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
+            this.lblCurrent = new System.Windows.Forms.ToolStripLabel();
             ((System.ComponentModel.ISupportInitialize)(this.dgvSensors)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvLegend)).BeginInit();
@@ -80,7 +83,7 @@ namespace PiramidaAnalize
             this.mainTree.HideSelection = false;
             this.mainTree.Location = new System.Drawing.Point(3, 3);
             this.mainTree.Name = "mainTree";
-            this.mainTree.PathSeparator = "=>";
+            this.mainTree.PathSeparator = " => ";
             this.table1.SetRowSpan(this.mainTree, 4);
             this.mainTree.Size = new System.Drawing.Size(294, 384);
             this.mainTree.TabIndex = 4;
@@ -107,12 +110,12 @@ namespace PiramidaAnalize
             // chart1
             // 
             this.chart1.BorderlineColor = System.Drawing.Color.Black;
-            chartArea3.AxisX.MajorGrid.LineColor = System.Drawing.Color.Gray;
-            chartArea3.AxisX.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
-            chartArea3.AxisY.MajorGrid.LineColor = System.Drawing.Color.Gray;
-            chartArea3.AxisY.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
-            chartArea3.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea3);
+            chartArea2.AxisX.MajorGrid.LineColor = System.Drawing.Color.Gray;
+            chartArea2.AxisX.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
+            chartArea2.AxisY.MajorGrid.LineColor = System.Drawing.Color.Gray;
+            chartArea2.AxisY.MajorGrid.LineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
+            chartArea2.Name = "ChartArea1";
+            this.chart1.ChartAreas.Add(chartArea2);
             this.chart1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.chart1.Location = new System.Drawing.Point(483, 3);
             this.chart1.Name = "chart1";
@@ -140,7 +143,10 @@ namespace PiramidaAnalize
             this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolClear,
-            this.toolPrint});
+            this.toolPrint,
+            this.toolStripSeparator1,
+            this.toolStripLabel1,
+            this.lblCurrent});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(909, 25);
@@ -223,6 +229,22 @@ namespace PiramidaAnalize
             this.table1.Size = new System.Drawing.Size(909, 551);
             this.table1.TabIndex = 15;
             // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolStripLabel1
+            // 
+            this.toolStripLabel1.Name = "toolStripLabel1";
+            this.toolStripLabel1.Size = new System.Drawing.Size(101, 22);
+            this.toolStripLabel1.Text = "Текущий объект:";
+            // 
+            // lblCurrent
+            // 
+            this.lblCurrent.Name = "lblCurrent";
+            this.lblCurrent.Size = new System.Drawing.Size(0, 22);
+            // 
             // frmAnalize
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -259,5 +281,8 @@ namespace PiramidaAnalize
         private System.Windows.Forms.TextBox txtCal2;
         private System.Windows.Forms.ToolStripButton toolPrint;
         private System.Windows.Forms.TableLayoutPanel table1;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripLabel toolStripLabel1;
+        private System.Windows.Forms.ToolStripLabel lblCurrent;
     }
 }

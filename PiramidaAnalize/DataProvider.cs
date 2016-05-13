@@ -1068,6 +1068,32 @@ namespace PiramidaAnalize
             return returnValue;
         }
 
+        /// <summary>
+        /// Tries to connect to the database with the default connection string.
+        /// Returns true if succeeds, false otherwise
+        /// </summary>
+        /// <returns></returns>
+        public bool TestConnection()
+        {
+            bool result = true;
+            SqlConnection cn = new SqlConnection(connectionString);
+            try
+            {
+                cn.Open();
+            }
+            catch (System.Data.SqlClient.SqlException ex)
+            {
+                result = false;
+            }
+            catch (Exception ex)
+            {
+                result = false;
+            }
+            if (cn.State == System.Data.ConnectionState.Open)
+                cn.Close();
+            return result;
+        }
+
         #region Подсчеты количества значений и процентов сбора
 
         /// <summary>
@@ -1194,11 +1220,8 @@ namespace PiramidaAnalize
         /// <param name="baseDate">Дата первого дня, начинающего заданный интервал</param>
         /// <param name="parNumber">Номер параметра: 12 (получасовки) или 101 (зафиксированные показания). 
         /// По умолчанию = 12</param>
-        /// <param name="daysCount">для интервалов month и year желательно указать количество дней,
-        /// соответственно, в заданном месяце и году, иначе для расчета будет использоваться значение
-        /// 30 для месяца и 365 для года</param>
         /// <returns></returns>
-        public long FactInSensor(long sensorID, string interval, DateTime baseDate, int parNumber=12, int daysCount = 0)
+        public long FactInSensor(long sensorID, string interval, DateTime baseDate, int parNumber=12)
         {
             SqlConnection cn = new SqlConnection(connectionString);
             SqlCommand cmdData;
@@ -1211,7 +1234,7 @@ namespace PiramidaAnalize
             {
                 case "halfhour":
                     {
-                        sql.AppendFormat("AND Data_date='{0}'", baseDate.ToString("yyyyMMdd HH:mm"));
+                        sql.AppendFormat("AND Data_date='{0}'", baseDate.AddMinutes(30).ToString("yyyyMMdd HH:mm"));
                         break;
                     }
                 case "day":
@@ -1289,19 +1312,95 @@ namespace PiramidaAnalize
         /// <param name="baseDate">Дата первого дня, начинающего заданный интервал</param>
         /// <param name="parNumber">Номер параметра: 12 (получасовки) или 101 (зафиксированные показания). 
         /// По умолчанию = 12</param>
-        /// <param name="daysCount">для интервалов month и year желательно указать количество дней,
-        /// соответственно, в заданном месяце и году, иначе для расчета будет использоваться значение
-        /// 30 для месяца и 365 для года</param>
         /// <returns></returns>
-        public long FactInDevice(long deviceID, string interval, DateTime baseDate, int parNumber=12, int daysCount=0)
+        public long FactInDevice(long deviceID, string interval, DateTime baseDate, int parNumber=12)
         {
-            long result = 0;
-            List<Sensor> sensors = GetSensors(deviceID);
-            foreach (Sensor s in sensors)
+            //long result = 0;
+            //List<Sensor> sensors = GetSensors(deviceID);
+            //foreach (Sensor s in sensors)
+            //{
+            //    result += FactInSensor(s.SensorID, interval, baseDate, parNumber);
+            //}
+            //return result;
+            SqlConnection cn = new SqlConnection(connectionString);
+            SqlCommand cmdData;
+            object result = 0;
+            long deviceCode = GetCode(deviceID);
+            System.Text.StringBuilder sql = new System.Text.StringBuilder();
+            sql.AppendFormat("SELECT Count(*) FROM DATA WHERE Parnumber={0} ", parNumber);
+            sql.AppendFormat("AND Object={0} ", deviceCode);
+            switch (interval)
             {
-                result += FactInSensor(s.SensorID, interval, baseDate, parNumber, daysCount);
+                case "halfhour":
+                    {
+                        sql.AppendFormat("AND Data_date='{0}'", baseDate.ToString("yyyyMMdd HH:mm"));
+                        break;
+                    }
+                case "day":
+                    {
+                        if (parNumber == 12)
+                            sql.AppendFormat("AND Data_date between '{0}' AND '{1}'",
+                                             baseDate.AddMinutes(30).ToString("yyyyMMdd HH:mm"),
+                                             baseDate.AddDays(1).ToString("yyyyMMdd"));
+                        else
+                            sql.AppendFormat("AND Data_date='{0}'", baseDate.ToString("yyyyMMdd"));
+                        break;
+                    }
+                case "week":
+                    {
+                        baseDate = baseDate.FirstDayOfWeek();
+                        if (parNumber == 12)
+                            baseDate = baseDate.AddMinutes(30);
+                        sql.AppendFormat("AND Data_date between '{0}' AND '{1}'",
+                            baseDate.ToString("yyyyMMdd HH:mm"),
+                            baseDate.AddDays((parNumber == 12) ? 7 : 6).ToString("yyyyMMdd"));
+                        break;
+                    }
+                case "month":
+                    {
+                        baseDate = baseDate.FirstDayOfMonth();
+                        if (parNumber == 12)
+                        {
+                            baseDate = baseDate.AddMinutes(30);
+                            sql.AppendFormat("AND Data_date between '{0}' AND '{1}'",
+                                baseDate.ToString("yyyyMMdd HH:mm"),
+                                baseDate.AddMonths(1).ToString("yyyyMMdd"));
+                        }
+                        else
+                            sql.AppendFormat("AND Data_date between '{0}' and '{1}'",
+                                baseDate.ToString("yyyyMMdd"),
+                                baseDate.AddMonths(1).AddDays(-1).ToString("yyMMdd"));
+                        break;
+                    }
+                case "year":
+                    {
+                        baseDate = baseDate.FirstDayOfYear();
+                        if (parNumber == 12)
+                        {
+                            baseDate = baseDate.AddMinutes(30);
+                            sql.AppendFormat("AND Data_date between '{0}' AND '{1}'",
+                                baseDate.ToString("yyyyMMdd HH:mm"),
+                                baseDate.AddYears(1).ToString("yyyyMMdd"));
+                        }
+                        else
+                            sql.AppendFormat("AND Data_date between '{0}' and '{1}'",
+                                baseDate.ToString("yyyyMMdd"),
+                                baseDate.AddYears(1).AddDays(-1).ToString("yyyyMMdd"));
+                        break;
+                    }
             }
-            return result;
+            if (cn.State != System.Data.ConnectionState.Open)
+                cn.Open();
+            cmdData = cn.CreateCommand();
+            cmdData.CommandText = sql.ToString();
+            cmdData.CommandTimeout = 600;
+            result = cmdData.ExecuteScalar();
+            cn.Close();
+            if (result == null)
+                return 0;
+            else
+                return long.Parse(result.ToString());
+
         }
 
         /// <summary>
@@ -1313,11 +1412,8 @@ namespace PiramidaAnalize
         /// <param name="baseDate">Дата первого дня, начинающего заданный интервал</param>
         /// <param name="parNumber">Номер параметра: 12 (получасовки) или 101 (зафиксированные показания). 
         /// По умолчанию = 12</param>
-        /// <param name="daysCount">для интервалов month и year желательно указать количество дней,
-        /// соответственно, в заданном месяце и году, иначе для расчета будет использоваться значение
-        /// 30 для месяца и 365 для года</param>
         /// <returns></returns>
-        public long FactInFolder(long folderID, string interval, DateTime baseDate, int parNumber = 12, int daysCount = 0)
+        public long FactInFolder(long folderID, string interval, DateTime baseDate, int parNumber = 12)
         {
             SqlConnection cn = new SqlConnection(connectionString);
             SqlCommand cmdDevices;
@@ -1335,7 +1431,7 @@ namespace PiramidaAnalize
                 drDevices = cmdDevices.ExecuteReader();
                 while (drDevices.Read())
                 {
-                    result += FactInDevice(drDevices.GetInt32(0), interval, baseDate, parNumber, daysCount);
+                    result += FactInDevice(drDevices.GetInt32(0), interval, baseDate, parNumber);
                 }
                 drDevices.Close();
             }

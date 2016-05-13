@@ -60,10 +60,18 @@ namespace PiramidaAnalize
             d = new DataProvider();
             cmdSelectAll.Click += CmdSelectAll_Click;
             cmdDeselectAll.Click += CmdDeselectAll_Click;
+            cmdRefresh.Click += CmdRefresh_Click;
             opt12.CheckedChanged += Opt12_CheckedChanged;
             opt101.CheckedChanged += Opt101_CheckedChanged;
             calMap.DateChanged += CalMap_DateChanged;
 		}
+
+        private void CmdRefresh_Click(object sender, EventArgs e)
+        {
+            this.Cursor = Cursors.WaitCursor;
+            ManageView(tabs.SelectedIndex);
+            this.Cursor = Cursors.Default;
+        }
 
         private void CalMap_DateChanged(object sender, DateRangeEventArgs e)
         {
@@ -211,7 +219,7 @@ namespace PiramidaAnalize
                                     }
                                     dgvData.DataSource = fixedVals;
                                     dgvData.DataMember = "fixedTable";
-                                    dgvData.Columns[2].HeaderText = "Выбранные";
+                                    dgvData.Columns[2].HeaderText = calMap.SelectionStart.ToShortDateString();
                                     dgvData.Columns[3].HeaderText = "Последние";
                                     dgvData.Columns[4].HeaderText = "Показания";
                                 }
@@ -239,7 +247,7 @@ namespace PiramidaAnalize
                         }                                               
                         break;
                     }
-                case 3:
+                case 3: // График
                     {
                         treeSensors.Nodes.Clear();
                         chart1.Series.Clear();

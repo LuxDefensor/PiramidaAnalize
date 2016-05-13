@@ -735,6 +735,7 @@ namespace PiramidaAnalize
         public void OutputCompare(List<long> selectedSensors, DateTime dtStart, DateTime dtEnd)
         {
             Excel.Range c;
+            Excel.FormatCondition fc;
             int percent;
             int firstRow = 4;
             int totalSensors = selectedSensors.Count;
@@ -835,7 +836,11 @@ namespace PiramidaAnalize
                     ws.Cells[currentRow, 6] = "=NA()";
                 else
                     ws.Cells[currentRow, 6] = consumption;
-                ws.Cells[currentRow, 7] = "=IF(RC[-2] = RC[-1], 0, 100*ABS(RC[-1]-RC[-2])/RC[-1])";
+                c = (Excel.Range)ws.Cells[currentRow, 7];
+                c.FormulaR1C1 = "=IF(RC[-2] = RC[-1], 0, 100*ABS(RC[-1]-RC[-2])/RC[-1])";
+                fc = (Excel.FormatCondition)c.FormatConditions.Add(Excel.XlFormatConditionType.xlCellValue,
+                                                                   Excel.XlFormatConditionOperator.xlGreater, "1");
+                fc.Font.Color = Excel.XlRgbColor.rgbRed;
                 percent = 100 * (currentRow - firstRow) / totalSensors;
                 pb.SetProgress(percent);
                 currentRow++;

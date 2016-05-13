@@ -22,35 +22,43 @@ namespace PiramidaAnalize
             this.Load += FrmMap_Load;
             toolChooseParam.SelectedIndexChanged += ToolChooseParam_SelectedIndexChanged;            
             dtpMap.ValueChanged += DtpMap_ValueChanged;
+            cmdGo.Click += CmdGo_Click;
             toolInterval.SelectedIndexChanged += ToolInterval_SelectedIndexChanged;
+        }
+
+        private void CmdGo_Click(object sender, EventArgs e)
+        {
+            this.Cursor = Cursors.WaitCursor;
+            SetupMap();
+            this.Cursor = Cursors.Default;
         }
 
         private void ToolChooseParam_SelectedIndexChanged(object sender, EventArgs e)
         {
-            this.Cursor = Cursors.WaitCursor;
-            SetupMap();
-            this.Cursor = Cursors.Default;
+            //this.Cursor = Cursors.WaitCursor;
+            //SetupMap();
+            //this.Cursor = Cursors.Default;
         }
 
         private void DtpMap_ValueChanged(object sender, EventArgs e)
         {
-            this.Cursor = Cursors.WaitCursor;
-            SetupMap();
-            this.Cursor = Cursors.Default;
+            //this.Cursor = Cursors.WaitCursor;
+            //SetupMap();
+            //this.Cursor = Cursors.Default;
         }        
 
         private void treeObjects_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            this.Cursor = Cursors.WaitCursor;
+            //this.Cursor = Cursors.WaitCursor;
             toolCurrentObject.Text = e.Node.FullPath;
             this.Refresh();
-            SetupMap();
-            this.Cursor = Cursors.Default;
+            //SetupMap();
+            //this.Cursor = Cursors.Default;
         }
 
         private void ToolInterval_SelectedIndexChanged(object sender, EventArgs e)
         {
-            this.Cursor = Cursors.WaitCursor;
+            //this.Cursor = Cursors.WaitCursor;
             switch (toolInterval.SelectedIndex)
             {
                 case 0: //День
@@ -66,18 +74,18 @@ namespace PiramidaAnalize
                 case 2: //Месяц
                     {
                         if (dtpMap.Value.Day != 1)
-                            dtpMap.Value = new DateTime(dtpMap.Value.Year, dtpMap.Value.Month, 1);
+                            dtpMap.Value = dtpMap.Value.FirstDayOfMonth();
                         break;
                     }
                 case 3: //Год
                     {
                         if (dtpMap.Value.Month != 1 || dtpMap.Value.Day != 1)
-                            dtpMap.Value = new DateTime(dtpMap.Value.Year, 1, 1);
+                            dtpMap.Value = dtpMap.Value.FirstDayOfYear();
                         break;
                     }
             }
-            SetupMap();
-            this.Cursor = Cursors.Default;
+            //SetupMap();
+            //this.Cursor = Cursors.Default;
         }
 
         private void FrmMap_Load(object sender, EventArgs e)
@@ -212,9 +220,13 @@ namespace PiramidaAnalize
                         col.HeaderText = headerDate.ToString("dd.MM.yyyy ddd");
                     else
                         col.HeaderText = (col.Index - 1).ToString();
+                    if (interval == "halfhour")
+                        col.HeaderCell.ToolTipText = headerDate.ToString("HH:mm") + " – " +
+                            headerDate.AddMinutes(30).ToString("HH:mm");
+                    else
+                        col.HeaderCell.ToolTipText = headerDate.ToString("dd.MM.yyyy ddd");
+                    headerDate = headerDate.IterateDate(interval);
                 }
-                col.HeaderCell.ToolTipText = headerDate.ToString("dd.MM.yyyy ddd");
-                headerDate = headerDate.IterateDate(interval);
             }
 
             #endregion
@@ -231,6 +243,8 @@ namespace PiramidaAnalize
             DateTime currentDate = baseDate;
             int totalValues, completed = 0;
             double percent, expected;
+            toolProgressLabel.Visible = true;
+            toolProgressBar.Visible = true;
             dgvMap.RowCount = folders.Count + devices.Count;
             switch (interval)
             {
@@ -263,8 +277,6 @@ namespace PiramidaAnalize
                 dgvMap.Columns[i].HeaderText = (i - 1).ToString();
                 dgvMap.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             }
-            toolProgressLabel.Visible = true;
-            toolProgressBar.Visible = true;
             this.Refresh();
             foreach (Folder f in folders)
             {
@@ -277,7 +289,7 @@ namespace PiramidaAnalize
                 for (int i = 2; i < dgvMap.ColumnCount; i++)
                 {
                     if (expected > 0)
-                        percent = 100 * d.FactInFolder(f.FolderID, interval, currentDate, parameter, daysCount) / expected;
+                        percent = 100 * d.FactInFolder(f.FolderID, interval, currentDate, parameter) / expected;
                     else
                         percent = 0;
                     dgvMap.Rows[currentRow].Cells[i].Style.BackColor = GetColor(percent);
@@ -296,7 +308,7 @@ namespace PiramidaAnalize
                 for (int i = 2; i < dgvMap.ColumnCount; i++)
                 {
                     if (expected > 0)
-                        percent = 100 * d.FactInDevice(dev.DeviceID, interval, currentDate, parameter, daysCount) / expected;
+                        percent = 100 * d.FactInDevice(dev.DeviceID, interval, currentDate, parameter) / expected;
                     else
                         percent = 0;
                     dgvMap.Rows[currentRow].Cells[i].Style.BackColor = GetColor(percent);
@@ -317,6 +329,8 @@ namespace PiramidaAnalize
             DateTime currentDate = baseDate;
             int totalValues, completed = 0;
             double percent, expected;
+            toolProgressLabel.Visible = true;
+            toolProgressBar.Visible = true;
             dgvMap.RowCount = sensors.Count;
             switch (interval)
             {
@@ -349,8 +363,6 @@ namespace PiramidaAnalize
             }
             totalValues = dgvMap.RowCount * (dgvMap.ColumnCount - 2);
             int currentRow = 0;
-            toolProgressLabel.Visible = true;
-            toolProgressBar.Visible = true;
             this.Refresh();
             foreach (Sensor s in sensors)
             {
@@ -361,7 +373,7 @@ namespace PiramidaAnalize
                 for (int i = 2; i < dgvMap.ColumnCount; i++)
                 {
                     if (expected > 0)
-                        percent = 100 * d.FactInSensor(s.SensorID, interval, currentDate, parameter, daysCount) / expected;
+                        percent = 100 * d.FactInSensor(s.SensorID, interval, currentDate, parameter) / expected;
                     else
                         percent = 0;
                     dgvMap.Rows[currentRow].Cells[i].Style.BackColor = GetColor(percent);

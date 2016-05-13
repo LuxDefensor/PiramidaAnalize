@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMap));
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.treeObjects = new System.Windows.Forms.TreeView();
             this.dgvMap = new System.Windows.Forms.DataGridView();
@@ -45,6 +46,8 @@
             this.toolProgressLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolProgressBar = new System.Windows.Forms.ToolStripProgressBar();
             this.dtpMap = new System.Windows.Forms.DateTimePicker();
+            this.cmdGo = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvMap)).BeginInit();
             this.toolStrip1.SuspendLayout();
@@ -75,6 +78,8 @@
             // treeObjects
             // 
             this.treeObjects.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeObjects.FullRowSelect = true;
+            this.treeObjects.HideSelection = false;
             this.treeObjects.Location = new System.Drawing.Point(3, 69);
             this.treeObjects.Name = "treeObjects";
             this.treeObjects.PathSeparator = " => ";
@@ -111,17 +116,19 @@
             this.toolChooseParam,
             this.toolStripSeparator2,
             this.toolStripLabel2,
-            this.toolInterval});
+            this.toolInterval,
+            this.toolStripSeparator1,
+            this.cmdGo});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(879, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(879, 26);
             this.toolStrip1.TabIndex = 2;
             this.toolStrip1.Text = "toolStrip1";
             // 
             // toolStripLabel1
             // 
             this.toolStripLabel1.Name = "toolStripLabel1";
-            this.toolStripLabel1.Size = new System.Drawing.Size(167, 22);
+            this.toolStripLabel1.Size = new System.Drawing.Size(167, 23);
             this.toolStripLabel1.Text = "Показывать сбор параметра:";
             // 
             // toolChooseParam
@@ -133,19 +140,19 @@
             "12 - Получасовки",
             "101 - Зафиксированные показания"});
             this.toolChooseParam.Name = "toolChooseParam";
-            this.toolChooseParam.Size = new System.Drawing.Size(200, 25);
+            this.toolChooseParam.Size = new System.Drawing.Size(200, 26);
             this.toolChooseParam.Text = "12 - Получасовки";
             this.toolChooseParam.Validating += new System.ComponentModel.CancelEventHandler(this.toolChooseParam_Validating);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 26);
             // 
             // toolStripLabel2
             // 
             this.toolStripLabel2.Name = "toolStripLabel2";
-            this.toolStripLabel2.Size = new System.Drawing.Size(60, 22);
+            this.toolStripLabel2.Size = new System.Drawing.Size(60, 23);
             this.toolStripLabel2.Text = "Интервал";
             // 
             // toolInterval
@@ -159,7 +166,7 @@
             "Месяц",
             "Год"});
             this.toolInterval.Name = "toolInterval";
-            this.toolInterval.Size = new System.Drawing.Size(84, 25);
+            this.toolInterval.Size = new System.Drawing.Size(84, 26);
             this.toolInterval.Text = "Месяц";
             this.toolInterval.Validating += new System.ComponentModel.CancelEventHandler(this.toolInterval_Validating);
             // 
@@ -226,6 +233,23 @@
             this.dtpMap.Size = new System.Drawing.Size(200, 20);
             this.dtpMap.TabIndex = 4;
             // 
+            // cmdGo
+            // 
+            this.cmdGo.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.cmdGo.Font = new System.Drawing.Font("Arial", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.cmdGo.ForeColor = System.Drawing.Color.Red;
+            this.cmdGo.Image = ((System.Drawing.Image)(resources.GetObject("cmdGo.Image")));
+            this.cmdGo.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.cmdGo.Name = "cmdGo";
+            this.cmdGo.Size = new System.Drawing.Size(23, 23);
+            this.cmdGo.Text = "!";
+            this.cmdGo.ToolTipText = "Построить карту сбора";
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 26);
+            // 
             // frmMap
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -264,5 +288,7 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
         private System.Windows.Forms.ToolStripStatusLabel toolProgressLabel;
         private System.Windows.Forms.ToolStripProgressBar toolProgressBar;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripButton cmdGo;
     }
 }
