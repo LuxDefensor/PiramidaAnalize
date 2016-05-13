@@ -40,6 +40,7 @@ namespace PiramidaAnalize
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.txtVersion = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // label1
@@ -78,11 +79,22 @@ namespace PiramidaAnalize
             this.label4.TabIndex = 3;
             this.label4.Text = "Филиал ПАО «МРСК Северного Кавказа» – «Ставропольэнерго»";
             // 
+            // txtVersion
+            // 
+            this.txtVersion.BackColor = System.Drawing.SystemColors.Control;
+            this.txtVersion.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtVersion.Location = new System.Drawing.Point(370, 35);
+            this.txtVersion.Name = "txtVersion";
+            this.txtVersion.Size = new System.Drawing.Size(140, 13);
+            this.txtVersion.TabIndex = 4;
+            this.txtVersion.TabStop = false;
+            // 
             // frmAbout
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(521, 246);
+            this.Controls.Add(this.txtVersion);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
@@ -96,11 +108,13 @@ namespace PiramidaAnalize
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "О программе";
             this.ResumeLayout(false);
+            this.PerformLayout();
 
 		}
 		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label label1;
-	}
+        private System.Windows.Forms.TextBox txtVersion;
+    }
 }

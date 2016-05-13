@@ -13,6 +13,7 @@ namespace PiramidaAnalize
     {
         private MainForm parent;
         private DataProvider d;
+        private bool enableMap = false;
 
         public frmMap()
         {
@@ -92,18 +93,21 @@ namespace PiramidaAnalize
             else
                 initialDate = initialDate.FirstDayOfMonth();
             dtpMap.Value = initialDate;
+            enableMap = true;
         }
 
         private void SetupMap()
         {
+            if (!enableMap)
+                return;
             if (treeObjects.SelectedNode == null)
                 return;
-            if (treeObjects.SelectedNode.Text == "Корень")
-                return;
+            //if (treeObjects.SelectedNode.Text == "Корень")
+            //    return;
             string selectedNode = treeObjects.SelectedNode.Tag.ToString();
             string interval;
             long objectID = -1;
-                objectID = long.Parse(selectedNode.Substring(1));            
+            objectID = long.Parse(selectedNode.Substring(1));        
             int param;
             DateTime baseDate, endDate;
             int daysCount = 0;
@@ -220,7 +224,9 @@ namespace PiramidaAnalize
         private void MakeFolderMap(long folderID, DateTime baseDate, DateTime endDate, string interval, 
              int parameter=12, int daysCount=0)
         {
-            List<Folder> folders = d.GetImmediateFolders(folderID);
+            List<Folder> folders = new List<Folder>();
+            if (folderID != 0)
+                folders = d.GetImmediateFolders(folderID);
             List<Device> devices = d.GetDevices(folderID);
             DateTime currentDate = baseDate;
             int totalValues, completed = 0;

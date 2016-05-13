@@ -23,7 +23,12 @@ namespace PiramidaAnalize
 			// The InitializeComponent() call is required for Windows Forms designer support.
 			//
 			InitializeComponent();
-
+            this.Load += FrmAbout_Load;
 		}
-	}
+
+        private void FrmAbout_Load(object sender, EventArgs e)
+        {
+            txtVersion.Text = "v." + Application.ProductVersion.ToString();
+        }
+    }
 }

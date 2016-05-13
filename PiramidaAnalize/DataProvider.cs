@@ -1343,6 +1343,7 @@ namespace PiramidaAnalize
             return result;
         }
 
+        //TODO сделать такие же функции FactIn... возвращающие набор значений за весь период
         #endregion
 
         #region Private methods
