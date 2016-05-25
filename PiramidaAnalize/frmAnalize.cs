@@ -107,7 +107,19 @@ namespace PiramidaAnalize
             grafikName = d.GetName("Sensor", stringSensorID) + " " + theDay.ToString("yyyy-MM-dd");            
             DataSet dsTemp = d.DrawDayGraph(sensorID, theDay);
             //grafik.Points.DataBindY(dsTemp.Tables[0].Rows, "value0");            
-            grafik.Points.DataBindXY(dsTemp.Tables[0].Rows, "time", dsTemp.Tables[0].Rows, "value0");
+            //grafik.Points.DataBindXY(dsTemp.Tables[0].Rows, "time", dsTemp.Tables[0].Rows, "value0");
+            DataPoint currentPoint;
+            int pointNumber = 0;
+            foreach (DataRow row in dsTemp.Tables[0].Rows)
+            {
+                currentPoint = new DataPoint(double.Parse(row["number"].ToString()),
+                    double.Parse(row["value0"].ToString()));
+                currentPoint.AxisLabel = row["time"].ToString();
+                currentPoint.ToolTip = string.Format("{0}\n{1}:\n{2}", grafikName, currentPoint.AxisLabel, 
+                    currentPoint.YValues[0]);
+                grafik.Points.Add(currentPoint);
+                pointNumber++;
+            }
             grafik.Name = grafikName;
             grafik.Color = colors[chart1.Series.Count % colors.GetLength(0)];
             grafik.BorderWidth = 2;

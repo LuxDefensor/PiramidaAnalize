@@ -36,6 +36,9 @@
             this.dgvData = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.cmdFromExcel = new System.Windows.Forms.Button();
+            this.cmdSave = new System.Windows.Forms.Button();
+            this.cmdLoad = new System.Windows.Forms.Button();
             this.txtDate = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
@@ -44,9 +47,6 @@
             this.label1 = new System.Windows.Forms.Label();
             this.tipLoad = new System.Windows.Forms.ToolTip(this.components);
             this.tipSave = new System.Windows.Forms.ToolTip(this.components);
-            this.cmdSave = new System.Windows.Forms.Button();
-            this.cmdLoad = new System.Windows.Forms.Button();
-            this.cmdFromExcel = new System.Windows.Forms.Button();
             this.tipExcel = new System.Windows.Forms.ToolTip(this.components);
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvData)).BeginInit();
@@ -125,6 +125,43 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Команды";
             // 
+            // cmdFromExcel
+            // 
+            this.cmdFromExcel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("cmdFromExcel.BackgroundImage")));
+            this.cmdFromExcel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.cmdFromExcel.Location = new System.Drawing.Point(272, 19);
+            this.cmdFromExcel.Name = "cmdFromExcel";
+            this.cmdFromExcel.Size = new System.Drawing.Size(79, 75);
+            this.cmdFromExcel.TabIndex = 2;
+            this.tipExcel.SetToolTip(this.cmdFromExcel, "Загрузить в БД данные из файла Excel");
+            this.cmdFromExcel.UseVisualStyleBackColor = true;
+            this.cmdFromExcel.Click += new System.EventHandler(this.cmdFromExcel_Click);
+            // 
+            // cmdSave
+            // 
+            this.cmdSave.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("cmdSave.BackgroundImage")));
+            this.cmdSave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.cmdSave.Location = new System.Drawing.Point(187, 19);
+            this.cmdSave.Name = "cmdSave";
+            this.cmdSave.Size = new System.Drawing.Size(79, 75);
+            this.cmdSave.TabIndex = 1;
+            this.tipSave.SetToolTip(this.cmdSave, "Записать в БД данные, введённые вручную (существующие данные будут перезаписаны)");
+            this.cmdSave.UseVisualStyleBackColor = true;
+            this.cmdSave.Click += new System.EventHandler(this.cmdSave_Click);
+            // 
+            // cmdLoad
+            // 
+            this.cmdLoad.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("cmdLoad.BackgroundImage")));
+            this.cmdLoad.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.cmdLoad.Location = new System.Drawing.Point(102, 19);
+            this.cmdLoad.Name = "cmdLoad";
+            this.cmdLoad.Size = new System.Drawing.Size(79, 75);
+            this.cmdLoad.TabIndex = 0;
+            this.tipLoad.SetToolTip(this.cmdLoad, "Загрузить в таблицу ниже данные из БД (все несохраненные изменения будут потеряны" +
+        ")");
+            this.cmdLoad.UseVisualStyleBackColor = true;
+            this.cmdLoad.Click += new System.EventHandler(this.cmdLoad_Click);
+            // 
             // txtDate
             // 
             this.txtDate.Location = new System.Drawing.Point(27, 131);
@@ -197,43 +234,6 @@
             this.tipSave.StripAmpersands = true;
             this.tipSave.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
             this.tipSave.ToolTipTitle = "Записать данные в БД";
-            // 
-            // cmdSave
-            // 
-            this.cmdSave.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("cmdSave.BackgroundImage")));
-            this.cmdSave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.cmdSave.Location = new System.Drawing.Point(91, 19);
-            this.cmdSave.Name = "cmdSave";
-            this.cmdSave.Size = new System.Drawing.Size(79, 75);
-            this.cmdSave.TabIndex = 1;
-            this.tipSave.SetToolTip(this.cmdSave, "Записать в БД данные, введённые вручную (существующие данные будут перезаписаны)");
-            this.cmdSave.UseVisualStyleBackColor = true;
-            this.cmdSave.Click += new System.EventHandler(this.cmdSave_Click);
-            // 
-            // cmdLoad
-            // 
-            this.cmdLoad.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("cmdLoad.BackgroundImage")));
-            this.cmdLoad.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.cmdLoad.Location = new System.Drawing.Point(6, 19);
-            this.cmdLoad.Name = "cmdLoad";
-            this.cmdLoad.Size = new System.Drawing.Size(79, 75);
-            this.cmdLoad.TabIndex = 0;
-            this.tipLoad.SetToolTip(this.cmdLoad, "Загрузить в таблицу ниже данные из БД (все несохраненные изменения будут потеряны" +
-        ")");
-            this.cmdLoad.UseVisualStyleBackColor = true;
-            this.cmdLoad.Click += new System.EventHandler(this.cmdLoad_Click);
-            // 
-            // cmdFromExcel
-            // 
-            this.cmdFromExcel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("cmdFromExcel.BackgroundImage")));
-            this.cmdFromExcel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.cmdFromExcel.Location = new System.Drawing.Point(176, 19);
-            this.cmdFromExcel.Name = "cmdFromExcel";
-            this.cmdFromExcel.Size = new System.Drawing.Size(79, 75);
-            this.cmdFromExcel.TabIndex = 2;
-            this.tipExcel.SetToolTip(this.cmdFromExcel, "Загрузить в БД данные из файла Excel");
-            this.cmdFromExcel.UseVisualStyleBackColor = true;
-            this.cmdFromExcel.Click += new System.EventHandler(this.cmdFromExcel_Click);
             // 
             // tipExcel
             // 

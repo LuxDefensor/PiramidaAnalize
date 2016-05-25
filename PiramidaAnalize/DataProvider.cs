@@ -404,30 +404,17 @@ namespace PiramidaAnalize
 		{
             SqlConnection cn = new SqlConnection(connectionString);
             SqlCommand cmdSensors;
-            SqlDataReader drSensors;
             System.Data.DataSet result=new System.Data.DataSet();
+            Dictionary<string, string> sensor = SensorInfo(sensorID);
+            long deviceCode = long.Parse(sensor["DeviceCode"]);
+            long sensorCode = long.Parse(sensor["SensorCode"]);
             if (cn.State != System.Data.ConnectionState.Open)
                 cn.Open();
 			StringBuilder sql=new StringBuilder();
-			sql.Append("SELECT Devices.ID DID, Devices.Code DCode, ");
-			sql.AppendLine("Sensors.ID SID, Sensors.Code SCode ");
-			sql.Append("FROM Sensors inner join Devices on sensors.stationID=devices.ID ");
-			sql.Append("WHERE Sensors.ID=");
-			sql.Append(sensorID.ToString());
             cmdSensors = cn.CreateCommand();
-            cmdSensors.CommandText = sql.ToString();
-            drSensors = cmdSensors.ExecuteReader();
-			long deviceCode=-1;
-			long sensorCode=-1;
-            while (drSensors.Read())
-            {
-                deviceCode = drSensors.GetInt32(1);
-                sensorCode = drSensors.GetInt32(3);
-            }
-			drSensors.Close();
-			sql.Clear();
-            sql.Append("SELECT left(convert(nvarchar,DATA_DATE, 108),5) 'time'");
-			sql.Append(",value0 FROM Data ");
+            sql.Append("SELECT left(convert(nvarchar,DATA_DATE, 108),5) 'time',");
+            sql.Append("DATEPART(HOUR,data_date)*2 + DATEPART(MINUTE,DATA_DATE)/30 number,");
+			sql.Append("value0 FROM Data ");
 			sql.Append("WHERE Parnumber=12 and Object=");
 			sql.Append(deviceCode.ToString());
 			sql.Append(" AND Item=");
@@ -440,6 +427,9 @@ namespace PiramidaAnalize
 			cmdSensors.CommandText=sql.ToString();
 			SqlDataAdapter daSensors=new SqlDataAdapter(cmdSensors);
 			daSensors.Fill(result);
+            System.Data.DataRow[] row = result.Tables[0].Select("time='00:00'");            
+            if (row.Length==1)
+                row[0]["number"] = 48;
 			cn.Close();
 			return result;
 		}
@@ -811,6 +801,7 @@ namespace PiramidaAnalize
         /// <returns>Датасет, содержащий получасовки, выгруженные из БД</returns>
         public System.Data.DataSet GetHalfhoursDaily(long deviceCode, long sensorCode, DateTime dtDay)
         {
+            //TODO какая-то из функций по получасовкам выдает их со сдвигом, если в сутках есть недосбор
             SqlConnection cn = new SqlConnection(connectionString);
             SqlCommand cmdSensors;
             System.Data.DataSet result = new System.Data.DataSet();

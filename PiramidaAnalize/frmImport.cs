@@ -16,7 +16,7 @@ namespace PiramidaAnalize
         DateTime currentDay;
         DataProvider d;
 
-        public frmImport(long deviceID,string deviceName,DateTime selectedDate)
+        public frmImport(long deviceID, string deviceName, DateTime selectedDate)
         {
             InitializeComponent();
             d = new DataProvider();
@@ -25,6 +25,14 @@ namespace PiramidaAnalize
             currentDay = selectedDate;
             toolOpen.Click += ToolOpen_Click;
             this.Load += FrmImport_Load;
+        }
+
+        public DataGridView Sheet
+        {
+        get
+            {
+                return dgvSheet;
+            }
         }
 
         private void FrmImport_Load(object sender, EventArgs e)
@@ -40,6 +48,7 @@ namespace PiramidaAnalize
         {
             if (dlgOpen.ShowDialog() == DialogResult.OK)
             {
+                dgvSheet.RowCount = (cboParameter.SelectedIndex == 0) ? 48 : 1;
 
             }
         }

@@ -148,6 +148,7 @@
     </Compile>
     <Compile Include="Sensor.cs" />
     <Compile Include="XLSExport.cs" />
+    <Compile Include="XLSImport.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="frmAbout.resx">

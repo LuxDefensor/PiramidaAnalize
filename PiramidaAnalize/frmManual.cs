@@ -17,6 +17,7 @@ namespace PiramidaAnalize
         private DataProvider d;
         private MainForm parent;
         private bool dataChanged;
+        private long currentDevice = -1;
 
         public frmManual()
         {
@@ -25,6 +26,40 @@ namespace PiramidaAnalize
             d = new DataProvider();
             this.Load += FrmManual_Load;            
             dgvData.CellEndEdit += DgvData_CellEndEdit;
+            mainTree.BeforeSelect += MainTree_BeforeSelect;
+            mainTree.AfterSelect += MainTree_AfterSelect;
+        }
+
+        private void MainTree_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            if (e.Node.Tag != null && e.Node.Tag.ToString()[0] == 'D')
+            {
+                currentDevice = long.Parse(e.Node.Tag.ToString().Substring(1));
+                txtSelected.Text = e.Node.Text;
+            }
+            else
+            {
+                currentDevice = -1;
+                txtSelected.Text = "";
+            }
+            dgvData.Rows.Clear();  
+        }
+
+        private void MainTree_BeforeSelect(object sender, TreeViewCancelEventArgs e)
+        {
+            if (dataChanged)
+            {
+                DialogResult response = MessageBox.Show("В таблице есть несохранённые данные!\n" +
+                    "Переход на другой объект приведёт к их потере. Продолжить?", "Переход на другой объект",
+                    MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                if (response == DialogResult.Cancel)
+                    e.Cancel = true;
+                else
+                {
+                    //ClearTable();
+                    dataChanged = false;
+                }
+            }
         }
 
         private void DgvData_CellEndEdit(object sender, DataGridViewCellEventArgs e)
@@ -288,6 +323,23 @@ namespace PiramidaAnalize
             }
         }
 
+        private void ClearTable()
+        {
+            foreach (DataGridViewRow row in dgvData.Rows)
+            {
+                foreach (DataGridViewCell cell in row.Cells)
+                {
+                    if (!cell.ReadOnly)
+                    {
+                        cell.Value = null;
+                        cell.Tag = null;
+                        cell.Style.BackColor = SystemColors.Window;
+                        cell.Style.Font = new Font(dgvData.DefaultCellStyle.Font, FontStyle.Regular);
+                    }
+                }
+            }
+        }
+
         private void cmdLoad_Click(object sender, EventArgs e)
         {
             if (dataChanged)
@@ -299,25 +351,14 @@ namespace PiramidaAnalize
                     return;
                 }
             }
-            string selectedNode = string.Empty;
-            long deviceID = 0;
-            txtDate.Text = cal1.SelectionStart.ToLongDateString();            
-            if (mainTree.SelectedNode != null)
-            {
-                txtSelected.Text = mainTree.SelectedNode.FullPath;
-                selectedNode = mainTree.SelectedNode.Tag.ToString();
-                if (selectedNode[0] == 'D')
-                {
-                    deviceID = long.Parse(selectedNode.Substring(1));
-                    LoadTable(deviceID, (opt12.Checked) ? 12 : 101);
-                }
-            }
+            txtDate.Text = cal1.SelectionStart.ToLongDateString();
+            if (currentDevice > 0)
+                LoadTable(currentDevice, (opt12.Checked) ? 12 : 101);
             dataChanged = false;
         }
 
         private void cmdSave_Click(object sender, EventArgs e)
         {
-            long deviceID = 0;
             DateTime dt;
             if (dataChanged)
             {
@@ -329,39 +370,18 @@ namespace PiramidaAnalize
                     return;
                 }
             }
-            string selectedNode = string.Empty;
             dt = cal1.SelectionStart;
-            if (mainTree.SelectedNode != null)
-            {
-                txtSelected.Text = mainTree.SelectedNode.FullPath;
-                selectedNode = mainTree.SelectedNode.Tag.ToString();
-                {
-                    if (selectedNode[0] == 'D')
-                    {
-                        deviceID = long.Parse(selectedNode.Substring(1));
-                        SaveTable(deviceID, (opt12.Checked) ? 12 : 101, dt);
-                    }
-                }
-            }
+            if (currentDevice > 0)
+                SaveTable(currentDevice, (opt12.Checked) ? 12 : 101, dt);
             dataChanged = false;
         }
 
         private void cmdFromExcel_Click(object sender, EventArgs e)
         {
-            long deviceID = 0;
-            DateTime dt;
-            string selectedNode = string.Empty;
-            dt = cal1.SelectionStart;
-            if (mainTree.SelectedNode != null)
+            if (currentDevice > 0)
             {
-                txtSelected.Text = mainTree.SelectedNode.FullPath;
-                selectedNode = mainTree.SelectedNode.Tag.ToString();
-                if (selectedNode[0] == 'D')
-                {
-                    deviceID = long.Parse(selectedNode.Substring(1));
-                    Form frm = new frmImport(deviceID, mainTree.SelectedNode.Text, cal1.SelectionStart);
-                    frm.ShowDialog();
-                }
+                Form frm = new frmImport(currentDevice, txtSelected.Text, cal1.SelectionStart);
+                frm.ShowDialog();
             }
         }
     }

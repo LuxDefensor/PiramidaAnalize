@@ -38,6 +38,7 @@ namespace PiramidaAnalize
 			int totalRows;
             int totalData; // totalRows * totalSensors
             int completed = 0;
+            double halfhour;
             Dictionary<string, string> sensorInfo;
             System.Data.DataSet halfhours;
             xls = new Excel.Application();
@@ -96,7 +97,7 @@ namespace PiramidaAnalize
             foreach (long sensorID in selectedSensors)
             {
                 sensorInfo = d.SensorInfo(sensorID);
-                currentDate = dtStart;
+                currentDate = dtStart.AddMinutes(30);
                 currentRow = firstRow;
                 c = (Excel.Range)(ws.Cells[1, currentColumn]);
                 c.ColumnWidth = 18;
@@ -107,19 +108,28 @@ namespace PiramidaAnalize
                 c.Font.Bold = true;
                 c.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
                 c.Interior.Color = Excel.XlRgbColor.rgbGrey;
-                while (currentDate <= dtEnd)
+                while (currentDate <= dtEnd.AddDays(1))
                 {
-                    halfhours = d.GetHalfhoursDaily(long.Parse(sensorInfo["DeviceCode"]),
-                               long.Parse(sensorInfo["SensorCode"]),
-                               currentDate);
-                    if (halfhours.Tables[0].Rows.Count > 0)
-                        foreach (System.Data.DataRow row in halfhours.Tables[0].Rows)
-                        {
-                            ws.Cells[currentRow, currentColumn] = row["value0"];
-                            currentRow++;
-                            completed++;
-                        }
-                    currentDate = currentDate.AddDays(1);
+                    //halfhours = d.GetHalfhoursDaily(long.Parse(sensorInfo["DeviceCode"]),
+                    //           long.Parse(sensorInfo["SensorCode"]),
+                    //           currentDate);
+                    halfhour = d.GetSingleHalfhour(long.Parse(sensorInfo["DeviceCode"]),
+                        long.Parse(sensorInfo["SensorCode"]),
+                        currentDate);
+                    if (halfhour < 0)
+                        ws.Cells[currentRow, currentColumn] = "";
+                    else
+                        ws.Cells[currentRow, currentColumn] = halfhour;
+                    //foreach (System.Data.DataRow row in halfhours.Tables[0].Rows)
+                    //{
+                    //    ws.Cells[currentRow, currentColumn] = row["value0"];
+                    //    currentRow++;
+                    //    completed++;
+                    //}
+                    //currentDate = currentDate.AddDays(1);
+                    currentDate = currentDate.AddMinutes(30);
+                    currentRow++;
+                    completed++;
                     percent = 100 * completed / totalData;
                     pb.SetProgress(percent);
                 }
@@ -151,9 +161,11 @@ namespace PiramidaAnalize
             int totalRows;
             int totalData;
             int completed = 0;
-            float firstHalf = 0; // The first halfhour of the two forming hour value as their average
+            double firstHalf = 0; // The first halfhour of the two forming hour value as their average
             Dictionary<string, string> sensorInfo;
-            System.Data.DataSet halfhours;
+            long deviceCode;
+            long sensorCode;
+            double halfhour;
             xls = new Excel.Application();
             xls.SheetsInNewWorkbook = 2;
             wb = xls.Workbooks.Add();
@@ -263,7 +275,9 @@ namespace PiramidaAnalize
             foreach (long sensorID in selectedSensors)
             {
                 sensorInfo = d.SensorInfo(sensorID);
-                currentDate = dtStart;
+                deviceCode = long.Parse(sensorInfo["DeviceCode"]);
+                sensorCode = long.Parse(sensorInfo["SensorCode"]);
+                currentDate = dtStart.AddMinutes(30);
                 currentRow = firstRow;
                 #region Write devices' and sensors' names into first two rows
                 // halfhours column headers
@@ -287,30 +301,28 @@ namespace PiramidaAnalize
                 c.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
                 c.Interior.Color = Excel.XlRgbColor.rgbGrey;
                 #endregion
-                while (currentDate <= dtEnd)
+                while (currentDate <= dtEnd.AddDays(1))
                 {
-
-                    halfhours = d.GetHalfhoursDaily(long.Parse(sensorInfo["DeviceCode"]),
-                                               long.Parse(sensorInfo["SensorCode"]), currentDate);
-                    foreach (System.Data.DataRow row in halfhours.Tables[0].Rows)
+                    halfhour = d.GetSingleHalfhour(deviceCode, sensorCode, currentDate);
+                    if (halfhour < 0)
+                        ws1.Cells[currentRow, currentColumn] = "";
+                    else
+                        ws1.Cells[currentRow, currentColumn] = halfhour;
+                    if ((currentRow - firstRow) % 2 == 0)
                     {
-                        ws1.Cells[currentRow, currentColumn] = row["value0"];
-                        if ((currentRow - firstRow) % 2 == 0)
-                        {
-                            firstHalf = float.Parse(row["value0"].ToString());
-                        }
-                        else
-                        {
-                            c = (Excel.Range)ws2.Cells[(currentRow - firstRow) / 2 + firstRow, currentColumn];
-                            c.Value = (firstHalf + float.Parse(row["value0"].ToString())) / 2;
-                            c.NumberFormat = "#,##0.00";
-                            firstHalf = 0;
-                        }
-                        currentRow++;
-                        completed++;
-
+                        firstHalf = (halfhour < 0) ? 0 : halfhour;
                     }
-                    currentDate = currentDate.AddDays(1);
+                    else
+                    {
+                        c = (Excel.Range)ws2.Cells[(currentRow - firstRow) / 2 + firstRow, currentColumn];
+
+                        c.Value = (firstHalf + ((halfhour < 0) ? 0 : halfhour)) / 2;
+                        c.NumberFormat = "#,##0.00";
+                        firstHalf = 0;
+                    }
+                    currentDate = currentDate.AddMinutes(30);
+                    currentRow++;
+                    completed++;
                     percent = 100 * completed / totalData;
                     pb.SetProgress(percent);
                 }
