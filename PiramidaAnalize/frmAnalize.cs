@@ -72,9 +72,10 @@ namespace PiramidaAnalize
             dgvLegend.DataMember = "Plots";
             dgvLegend.Columns[0].HeaderText = "х";
             dgvLegend.Columns[1].HeaderText = "Графики";
-            dgvLegend.Columns[2].HeaderText = "Цвет";
+            dgvLegend.Columns[2].HeaderText = "Цвет";            
             dgvLegend.Columns[0].Width = 20;
-            dgvLegend.Columns[1].Width = (int)(dgvLegend.Width * 0.8);
+            //dgvLegend.Columns[1].Width = (int)(dgvLegend.Width * 0.8);
+            dgvLegend.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             dgvLegend.Columns[2].Width = 50;
             dgvLegend.Columns[0].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dgvLegend.Columns[1].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
@@ -139,21 +140,6 @@ namespace PiramidaAnalize
                 dsPlots.Tables["Plots"].Rows.Add(r);
                 dgvLegend.Rows[dgvLegend.Rows.Count - 1].Cells[2].Style.BackColor = s.Color;
             }
-        }
-		
-		void FrmAnalizeResizeEnd(object sender, EventArgs e)
-		{
-            dgvLegend.Columns[1].Width = (int)(dgvLegend.Width * 0.8);
-		}
-
-        private void dgvLegend_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-
-        private void dgvLegend_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
-        {
-
         }
 
         private void dgvLegend_CellContentClick(object sender, DataGridViewCellEventArgs e)

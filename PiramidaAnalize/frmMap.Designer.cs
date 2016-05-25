@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMap));
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.treeObjects = new System.Windows.Forms.TreeView();
@@ -39,6 +39,8 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
             this.toolInterval = new System.Windows.Forms.ToolStripComboBox();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.cmdGo = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolCurrentObject = new System.Windows.Forms.ToolStripStatusLabel();
@@ -46,8 +48,6 @@
             this.toolProgressLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolProgressBar = new System.Windows.Forms.ToolStripProgressBar();
             this.dtpMap = new System.Windows.Forms.DateTimePicker();
-            this.cmdGo = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvMap)).BeginInit();
             this.toolStrip1.SuspendLayout();
@@ -90,14 +90,14 @@
             // 
             // dgvMap
             // 
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgvMap.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvMap.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.dgvMap.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvMap.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvMap.Location = new System.Drawing.Point(303, 29);
@@ -170,6 +170,23 @@
             this.toolInterval.Text = "Месяц";
             this.toolInterval.Validating += new System.ComponentModel.CancelEventHandler(this.toolInterval_Validating);
             // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 26);
+            // 
+            // cmdGo
+            // 
+            this.cmdGo.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.cmdGo.Font = new System.Drawing.Font("Arial", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.cmdGo.ForeColor = System.Drawing.Color.Red;
+            this.cmdGo.Image = ((System.Drawing.Image)(resources.GetObject("cmdGo.Image")));
+            this.cmdGo.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.cmdGo.Name = "cmdGo";
+            this.cmdGo.Size = new System.Drawing.Size(23, 23);
+            this.cmdGo.Text = "!";
+            this.cmdGo.ToolTipText = "Построить карту сбора";
+            // 
             // statusStrip1
             // 
             this.tableLayoutPanel1.SetColumnSpan(this.statusStrip1, 2);
@@ -232,23 +249,6 @@
             this.dtpMap.Name = "dtpMap";
             this.dtpMap.Size = new System.Drawing.Size(200, 20);
             this.dtpMap.TabIndex = 4;
-            // 
-            // cmdGo
-            // 
-            this.cmdGo.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.cmdGo.Font = new System.Drawing.Font("Arial", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.cmdGo.ForeColor = System.Drawing.Color.Red;
-            this.cmdGo.Image = ((System.Drawing.Image)(resources.GetObject("cmdGo.Image")));
-            this.cmdGo.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.cmdGo.Name = "cmdGo";
-            this.cmdGo.Size = new System.Drawing.Size(23, 23);
-            this.cmdGo.Text = "!";
-            this.cmdGo.ToolTipText = "Построить карту сбора";
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 26);
             // 
             // frmMap
             // 

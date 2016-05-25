@@ -136,10 +136,10 @@ namespace PiramidaAnalize
             // 
             // mnuInput
             // 
-            this.mnuInput.Enabled = false;
             this.mnuInput.Name = "mnuInput";
             this.mnuInput.Size = new System.Drawing.Size(186, 22);
             this.mnuInput.Text = "&Ручной ввод данных";
+            this.mnuInput.Click += new System.EventHandler(this.mnuInput_Click);
             // 
             // mnuTools
             // 
@@ -151,10 +151,10 @@ namespace PiramidaAnalize
             // 
             // настройкаПодключенияToolStripMenuItem
             // 
-            this.настройкаПодключенияToolStripMenuItem.Enabled = false;
             this.настройкаПодключенияToolStripMenuItem.Name = "настройкаПодключенияToolStripMenuItem";
             this.настройкаПодключенияToolStripMenuItem.Size = new System.Drawing.Size(212, 22);
             this.настройкаПодключенияToolStripMenuItem.Text = "Настройка подключения";
+            this.настройкаПодключенияToolStripMenuItem.Click += new System.EventHandler(this.настройкаПодключенияToolStripMenuItem_Click);
             // 
             // mnuWindow
             // 

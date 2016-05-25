@@ -17,15 +17,59 @@ namespace PiramidaAnalize
 	/// Description of MainForm.
 	/// </summary>
 	public partial class MainForm : Form
-	{       
+	{
+        private string writerConnectionString;
+
         public MainForm()
 		{
 			//
 			// The InitializeComponent() call is required for Windows Forms designer support.
 			//
 			InitializeComponent();
-			
+            writerConnectionString = string.Empty;
 		}
+
+        public bool GetWriterAccess()
+        {
+            bool result = true;
+            frmPassword pwd = new frmPassword();
+            if (pwd.ShowDialog() == DialogResult.OK)
+            {
+                System.Data.SqlClient.SqlConnectionStringBuilder conString = new System.Data.SqlClient.SqlConnectionStringBuilder();
+                database st = new PiramidaAnalize.database();
+                conString.DataSource = st.Server;
+                conString.InitialCatalog = st.Database;
+                conString.UserID = pwd.Login;
+                conString.Password = pwd.Password;
+                writerConnectionString = conString.ToString();
+                System.Data.SqlClient.SqlConnection cn = new System.Data.SqlClient.SqlConnection(writerConnectionString);
+                try
+                {
+                    cn.Open();
+                }
+                catch
+                {
+                    writerConnectionString = string.Empty;
+                    result = false;
+                }
+                if (cn.State == System.Data.ConnectionState.Open)
+                    cn.Close();
+            }
+            else
+            {
+                writerConnectionString = string.Empty;
+                result = false;
+            }                
+            return result;
+        }
+
+        public string WriterConnectionString
+        {
+        get
+            {
+                return writerConnectionString;
+            }
+        }
 		
 		void MnuExitClick(object sender, EventArgs e)
 		{
@@ -156,6 +200,52 @@ namespace PiramidaAnalize
                 f.Show();
                 f.WindowState = FormWindowState.Maximized;
             }
+        }
+
+        private void mnuInput_Click(object sender, EventArgs e)
+        {
+            DataProvider d = new DataProvider();
+            string windowTitle = "Ручной ввод данных";
+            bool contains = false;
+            foreach (Form child in this.MdiChildren)
+                if (child.Text == windowTitle)
+                {
+                    child.Activate();
+                    contains = true;
+                    break;
+                }
+            if (!contains)
+            {
+                if (writerConnectionString == string.Empty)
+                {
+                    if (!GetWriterAccess())
+                    {
+                        MessageBox.Show("Недостаточно прав для ручного ввода данных\n" +
+                            "Обратитесь к администратору системы", "Вы не можете вводить данные вручную",
+                            MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                        return;
+                    }                    
+                }
+                if (!d.TestWriter(writerConnectionString))
+                {
+                    MessageBox.Show("Недостаточно прав для ручного ввода данных\n" +
+                        "Обратитесь к администратору системы", "Вы не можете вводить данные вручную",
+                        MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                    return;
+                }
+                frmManual f = new frmManual();
+                this.Cursor = Cursors.WaitCursor;
+                f.MdiParent = this;
+                f.Text = windowTitle;
+                f.Show();
+                f.WindowState = FormWindowState.Maximized;
+            }
+        }
+
+        private void настройкаПодключенияToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            frmSettings f = new frmSettings();
+            f.ShowDialog();
         }
     }
 }

@@ -48,13 +48,13 @@ namespace PiramidaAnalize
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolClear = new System.Windows.Forms.ToolStripButton();
             this.toolPrint = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
+            this.lblCurrent = new System.Windows.Forms.ToolStripLabel();
             this.treeIcons = new System.Windows.Forms.ImageList(this.components);
             this.txtCal1 = new System.Windows.Forms.TextBox();
             this.txtCal2 = new System.Windows.Forms.TextBox();
             this.table1 = new System.Windows.Forms.TableLayoutPanel();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
-            this.lblCurrent = new System.Windows.Forms.ToolStripLabel();
             ((System.ComponentModel.ISupportInitialize)(this.dgvSensors)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvLegend)).BeginInit();
@@ -70,6 +70,7 @@ namespace PiramidaAnalize
             this.dgvSensors.Location = new System.Drawing.Point(3, 393);
             this.dgvSensors.MultiSelect = false;
             this.dgvSensors.Name = "dgvSensors";
+            this.dgvSensors.RowHeadersVisible = false;
             this.table1.SetRowSpan(this.dgvSensors, 2);
             this.dgvSensors.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvSensors.Size = new System.Drawing.Size(474, 155);
@@ -132,11 +133,9 @@ namespace PiramidaAnalize
             this.dgvLegend.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvLegend.Location = new System.Drawing.Point(483, 304);
             this.dgvLegend.Name = "dgvLegend";
+            this.dgvLegend.RowHeadersVisible = false;
             this.dgvLegend.Size = new System.Drawing.Size(423, 244);
             this.dgvLegend.TabIndex = 10;
-            this.dgvLegend.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.dgvLegend_CellBeginEdit);
-            this.dgvLegend.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvLegend_CellContentClick);
-            this.dgvLegend.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvLegend_CellValueChanged);
             // 
             // toolStrip1
             // 
@@ -172,6 +171,22 @@ namespace PiramidaAnalize
             this.toolPrint.Size = new System.Drawing.Size(23, 22);
             this.toolPrint.Text = "Печать";
             this.toolPrint.Click += new System.EventHandler(this.toolPrint_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolStripLabel1
+            // 
+            this.toolStripLabel1.Name = "toolStripLabel1";
+            this.toolStripLabel1.Size = new System.Drawing.Size(101, 22);
+            this.toolStripLabel1.Text = "Текущий объект:";
+            // 
+            // lblCurrent
+            // 
+            this.lblCurrent.Name = "lblCurrent";
+            this.lblCurrent.Size = new System.Drawing.Size(0, 22);
             // 
             // treeIcons
             // 
@@ -229,22 +244,6 @@ namespace PiramidaAnalize
             this.table1.Size = new System.Drawing.Size(909, 551);
             this.table1.TabIndex = 15;
             // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-            // 
-            // toolStripLabel1
-            // 
-            this.toolStripLabel1.Name = "toolStripLabel1";
-            this.toolStripLabel1.Size = new System.Drawing.Size(101, 22);
-            this.toolStripLabel1.Text = "Текущий объект:";
-            // 
-            // lblCurrent
-            // 
-            this.lblCurrent.Name = "lblCurrent";
-            this.lblCurrent.Size = new System.Drawing.Size(0, 22);
-            // 
             // frmAnalize
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -256,7 +255,6 @@ namespace PiramidaAnalize
             this.ShowInTaskbar = false;
             this.Text = "Анализ профиля";
             this.Load += new System.EventHandler(this.FrmAnalizeLoad);
-            this.ResizeEnd += new System.EventHandler(this.FrmAnalizeResizeEnd);
             ((System.ComponentModel.ISupportInitialize)(this.dgvSensors)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvLegend)).EndInit();

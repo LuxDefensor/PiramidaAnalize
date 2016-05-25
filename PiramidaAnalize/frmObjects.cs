@@ -111,7 +111,6 @@ namespace PiramidaAnalize
 		{
 			this.Size=this.MdiParent.ClientSize;
 			this.Refresh();
-
             parent = (MainForm)this.MdiParent;
 			d.PopulateDevices(mainTree);
             parent.Cursor = Cursors.Default;
@@ -185,6 +184,8 @@ namespace PiramidaAnalize
                             try
                             {
                                 txtDeviceCode.Text = deviceCode.ToString();
+                                lblValuesDevice.Text = string.Format("{0} за {1}", mainTree.SelectedNode.Text,
+                                    calMap.SelectionStart.ToShortDateString());
                                 if (opt12.Checked)
                                 {
                                     dgvData.DataSource = d.GetHalfhoursDailyPivot(deviceCode, calMap.SelectionStart);
@@ -209,7 +210,7 @@ namespace PiramidaAnalize
                                     foreach (Sensor s in sensors)
                                     {
                                         val2 = d.GetOneFixedData(deviceCode, s.SensorCode, calMap.SelectionStart);
-                                        val1 = d.GetLastFixedData(deviceCode, s.SensorCode, calMap.SelectionStart);
+                                        val1 = d.GetLastFixedData(deviceCode, s.SensorCode);
                                         newRow = fixedVals.Tables[0].Rows.Add();
                                         newRow[0] = s.SensorCode;
                                         newRow[1] = s.SensorName;
@@ -260,7 +261,7 @@ namespace PiramidaAnalize
                             Title t;
                             Series grafik;
                             t = chart1.Titles.Add("Basic");
-                            t.Text = calMap.SelectionStart.ToShortDateString();
+                            t.Text = calMap.SelectionStart.ToShortDateString() + " - " + mainTree.SelectedNode.Text;
                             t.Font = new Font("Tahoma", 16);
                             t.Alignment = ContentAlignment.TopCenter;                           
                             txtDeviceCode.Text = deviceCode.ToString();
