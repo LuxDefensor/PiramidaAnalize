@@ -51,6 +51,7 @@ namespace PiramidaAnalize
             this.tabMap = new System.Windows.Forms.TabPage();
             this.dgvMap = new System.Windows.Forms.DataGridView();
             this.tabVals = new System.Windows.Forms.TabPage();
+            this.lblValuesDevice = new System.Windows.Forms.Label();
             this.opt101 = new System.Windows.Forms.RadioButton();
             this.opt12 = new System.Windows.Forms.RadioButton();
             this.dgvData = new System.Windows.Forms.DataGridView();
@@ -64,7 +65,7 @@ namespace PiramidaAnalize
             this.calMap = new System.Windows.Forms.MonthCalendar();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.cmdRefresh = new System.Windows.Forms.Button();
-            this.lblValuesDevice = new System.Windows.Forms.Label();
+            this.txtDate = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dgvSensors)).BeginInit();
             this.tabs.SuspendLayout();
             this.tabSensors.SuspendLayout();
@@ -90,7 +91,7 @@ namespace PiramidaAnalize
             this.mainTree.Name = "mainTree";
             this.mainTree.PathSeparator = " => ";
             this.mainTree.Size = new System.Drawing.Size(243, 370);
-            this.mainTree.TabIndex = 0;
+            this.mainTree.TabIndex = 2;
             this.mainTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.MainTreeAfterSelect);
             // 
             // dgvSensors
@@ -119,17 +120,17 @@ namespace PiramidaAnalize
             // 
             this.txtDevice.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtDevice.Location = new System.Drawing.Point(394, 12);
+            this.txtDevice.Location = new System.Drawing.Point(478, 12);
             this.txtDevice.Name = "txtDevice";
-            this.txtDevice.Size = new System.Drawing.Size(458, 20);
-            this.txtDevice.TabIndex = 3;
+            this.txtDevice.Size = new System.Drawing.Size(374, 20);
+            this.txtDevice.TabIndex = 5;
             // 
             // txtDeviceCode
             // 
             this.txtDeviceCode.Location = new System.Drawing.Point(328, 12);
             this.txtDeviceCode.Name = "txtDeviceCode";
             this.txtDeviceCode.Size = new System.Drawing.Size(60, 20);
-            this.txtDeviceCode.TabIndex = 2;
+            this.txtDeviceCode.TabIndex = 3;
             this.txtDeviceCode.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // tabs
@@ -145,7 +146,7 @@ namespace PiramidaAnalize
             this.tabs.Name = "tabs";
             this.tabs.SelectedIndex = 0;
             this.tabs.Size = new System.Drawing.Size(598, 511);
-            this.tabs.TabIndex = 4;
+            this.tabs.TabIndex = 6;
             this.tabs.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabs_Selected);
             // 
             // tabSensors
@@ -181,6 +182,7 @@ namespace PiramidaAnalize
             this.dgvMap.Location = new System.Drawing.Point(0, 0);
             this.dgvMap.Name = "dgvMap";
             this.dgvMap.ReadOnly = true;
+            this.dgvMap.RowHeadersVisible = false;
             this.dgvMap.Size = new System.Drawing.Size(590, 485);
             this.dgvMap.TabIndex = 0;
             // 
@@ -197,6 +199,17 @@ namespace PiramidaAnalize
             this.tabVals.TabIndex = 1;
             this.tabVals.Text = "Значения";
             this.tabVals.UseVisualStyleBackColor = true;
+            // 
+            // lblValuesDevice
+            // 
+            this.lblValuesDevice.AutoSize = true;
+            this.lblValuesDevice.BackColor = System.Drawing.Color.Transparent;
+            this.lblValuesDevice.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lblValuesDevice.ForeColor = System.Drawing.Color.Red;
+            this.lblValuesDevice.Location = new System.Drawing.Point(350, 13);
+            this.lblValuesDevice.Name = "lblValuesDevice";
+            this.lblValuesDevice.Size = new System.Drawing.Size(0, 16);
+            this.lblValuesDevice.TabIndex = 6;
             // 
             // opt101
             // 
@@ -351,7 +364,7 @@ namespace PiramidaAnalize
             // 
             this.calMap.Location = new System.Drawing.Point(12, 12);
             this.calMap.Name = "calMap";
-            this.calMap.TabIndex = 1;
+            this.calMap.TabIndex = 0;
             // 
             // imageList1
             // 
@@ -375,27 +388,25 @@ namespace PiramidaAnalize
             this.cmdRefresh.Location = new System.Drawing.Point(188, 15);
             this.cmdRefresh.Name = "cmdRefresh";
             this.cmdRefresh.Size = new System.Drawing.Size(51, 52);
-            this.cmdRefresh.TabIndex = 5;
+            this.cmdRefresh.TabIndex = 1;
             this.cmdRefresh.TabStop = false;
             this.cmdRefresh.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.cmdRefresh.UseVisualStyleBackColor = true;
             // 
-            // lblValuesDevice
+            // txtDate
             // 
-            this.lblValuesDevice.AutoSize = true;
-            this.lblValuesDevice.BackColor = System.Drawing.Color.Transparent;
-            this.lblValuesDevice.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.lblValuesDevice.ForeColor = System.Drawing.Color.Red;
-            this.lblValuesDevice.Location = new System.Drawing.Point(350, 13);
-            this.lblValuesDevice.Name = "lblValuesDevice";
-            this.lblValuesDevice.Size = new System.Drawing.Size(0, 16);
-            this.lblValuesDevice.TabIndex = 6;
+            this.txtDate.Location = new System.Drawing.Point(394, 12);
+            this.txtDate.Name = "txtDate";
+            this.txtDate.Size = new System.Drawing.Size(78, 20);
+            this.txtDate.TabIndex = 4;
+            this.txtDate.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // frmObjects
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(871, 571);
+            this.Controls.Add(this.txtDate);
             this.Controls.Add(this.cmdRefresh);
             this.Controls.Add(this.calMap);
             this.Controls.Add(this.txtDeviceID);
@@ -449,5 +460,6 @@ namespace PiramidaAnalize
         private System.Windows.Forms.RadioButton opt12;
         private System.Windows.Forms.Button cmdRefresh;
         private System.Windows.Forms.Label lblValuesDevice;
+        private System.Windows.Forms.TextBox txtDate;
     }
 }

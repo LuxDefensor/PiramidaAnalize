@@ -120,7 +120,7 @@
             this.groupBox2.Controls.Add(this.cmdLoad);
             this.groupBox2.Location = new System.Drawing.Point(251, 51);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(366, 100);
+            this.groupBox2.Size = new System.Drawing.Size(278, 100);
             this.groupBox2.TabIndex = 4;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Команды";
@@ -129,7 +129,7 @@
             // 
             this.cmdFromExcel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("cmdFromExcel.BackgroundImage")));
             this.cmdFromExcel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.cmdFromExcel.Location = new System.Drawing.Point(272, 19);
+            this.cmdFromExcel.Location = new System.Drawing.Point(183, 19);
             this.cmdFromExcel.Name = "cmdFromExcel";
             this.cmdFromExcel.Size = new System.Drawing.Size(79, 75);
             this.cmdFromExcel.TabIndex = 2;
@@ -141,7 +141,7 @@
             // 
             this.cmdSave.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("cmdSave.BackgroundImage")));
             this.cmdSave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.cmdSave.Location = new System.Drawing.Point(187, 19);
+            this.cmdSave.Location = new System.Drawing.Point(98, 19);
             this.cmdSave.Name = "cmdSave";
             this.cmdSave.Size = new System.Drawing.Size(79, 75);
             this.cmdSave.TabIndex = 1;
@@ -153,7 +153,7 @@
             // 
             this.cmdLoad.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("cmdLoad.BackgroundImage")));
             this.cmdLoad.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.cmdLoad.Location = new System.Drawing.Point(102, 19);
+            this.cmdLoad.Location = new System.Drawing.Point(13, 19);
             this.cmdLoad.Name = "cmdLoad";
             this.cmdLoad.Size = new System.Drawing.Size(79, 75);
             this.cmdLoad.TabIndex = 0;

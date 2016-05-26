@@ -135,11 +135,14 @@ namespace PiramidaAnalize
         {
             if (mainTree.SelectedNode != null)
                 txtDevice.Text = mainTree.SelectedNode.FullPath;
+            else
+                return;
             string stringDeviceID = mainTree.SelectedNode.Tag.ToString().Substring(1);
             long deviceID, deviceCode;
             long.TryParse(stringDeviceID, out deviceID);
             deviceCode = d.GetCode(deviceID);
             txtDeviceCode.Text = deviceCode.ToString();
+            txtDate.Text = calMap.SelectionStart.ToShortDateString();
             txtDeviceID.Text = stringDeviceID;
             switch (tabIndex)
             {

@@ -284,7 +284,7 @@ namespace PiramidaAnalize
                             {
                                 d.WriteOneData(parent.WriterConnectionString, 12, deviceCode,
                                     long.Parse(dgvData[0, row.Index].Value.ToString()), currentDate,
-                                    long.Parse(dgvData[i, row.Index].Value.ToString()));
+                                    double.Parse(dgvData[i, row.Index].Value.ToString()));
                                 dgvData[i, row.Index].Tag = null;
                                 dgvData[i, row.Index].Style.Font = new Font(dgvData.DefaultCellStyle.Font, FontStyle.Regular);
                             }
@@ -321,6 +321,126 @@ namespace PiramidaAnalize
                     }
                 }
             }
+        }
+
+        private void MakeEmptyTable(long deviceID, int parameter)
+        {
+            long totalCells;
+            int currentRow;
+            long deviceCode = d.GetCode(deviceID);
+            this.Cursor = Cursors.WaitCursor;
+            List<Sensor> sensors = d.GetSensors(deviceID);
+            dgvData.Rows.Clear();
+            dgvData.Columns.Clear();
+            dgvData.RowCount = sensors.Count;
+            currentRow = 0;
+            if (parameter == 12)
+            {
+                dgvData.ColumnCount = 51; //код канала, название канала, 48 получасовок и потребление
+                #region Make column headers
+                dgvData.Columns[0].ReadOnly = true;
+                dgvData.Columns[0].Frozen = true;
+                dgvData.Columns[0].HeaderText = "Код";
+                dgvData.Columns[0].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dgvData.Columns[0].DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
+                dgvData.Columns[0].DefaultCellStyle.Font = new Font(dgvData.DefaultCellStyle.Font, FontStyle.Regular);
+                dgvData.Columns[1].ReadOnly = true;
+                dgvData.Columns[1].Frozen = true;
+                dgvData.Columns[1].HeaderText = "Канал";
+                dgvData.Columns[1].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dgvData.Columns[1].DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
+                dgvData.Columns[1].DefaultCellStyle.Font = new Font(dgvData.DefaultCellStyle.Font, FontStyle.Regular);
+                dgvData.Columns[2].ReadOnly = true;
+                dgvData.Columns[2].Frozen = true;
+                dgvData.Columns[2].HeaderText = "Потребление";
+                dgvData.Columns[2].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dgvData.Columns[2].DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
+                dgvData.Columns[2].DefaultCellStyle.Font = new Font(dgvData.DefaultCellStyle.Font, FontStyle.Regular);
+                dgvData.Columns[3].ReadOnly = false;
+                dgvData.Columns[3].DefaultCellStyle.BackColor = SystemColors.Window;
+                dgvData.Columns[4].ReadOnly = false;
+                dgvData.Columns[4].DefaultCellStyle.BackColor = SystemColors.Window;
+                dgvData.Columns[5].ReadOnly = false;
+                dgvData.Columns[5].DefaultCellStyle.BackColor = SystemColors.Window;
+                dgvData.Columns[6].ReadOnly = false;
+                dgvData.Columns[6].DefaultCellStyle = dgvData.DefaultCellStyle;
+                for (int currentColumn = 3; currentColumn < dgvData.ColumnCount; currentColumn++)
+                {
+                    dgvData.Columns[currentColumn].HeaderText = string.Format("{0} - {1}",
+                        cal1.SelectionStart.AddMinutes(30 * (currentColumn - 3)).ToString("HH:mm"),
+                        cal1.SelectionStart.AddMinutes(30 * (currentColumn - 2)).ToString("HH:mm"));
+                    dgvData.Columns[currentColumn].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                    dgvData.Columns[currentColumn].DefaultCellStyle.Font =
+                        new Font(dgvData.DefaultCellStyle.Font, FontStyle.Regular);
+                }
+                #endregion
+                totalCells = dgvData.RowCount * 48;
+                foreach (Sensor s in sensors)
+                {
+                    dgvData[0, currentRow].Value = s.SensorCode;
+                    dgvData[1, currentRow].Value = s.SensorName;
+                    dgvData[1, currentRow].Tag = "Empty";
+                    currentRow++;
+                }
+            }
+            else
+            {
+                // код канала, название канала, последняя дата, последние показания, 
+                //дата предыдущих показаний, предыдущие показания, показания на выбранную дату.            
+                dgvData.ColumnCount = 7;
+                #region Make column headers
+                dgvData.Columns[0].ReadOnly = true;
+                dgvData.Columns[0].Frozen = true;
+                dgvData.Columns[0].HeaderText = "Код";
+                dgvData.Columns[0].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dgvData.Columns[0].DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
+                dgvData.Columns[0].DefaultCellStyle.Font = new Font(dgvData.DefaultCellStyle.Font, FontStyle.Regular);
+                dgvData.Columns[1].ReadOnly = true;
+                dgvData.Columns[1].Frozen = true;
+                dgvData.Columns[1].HeaderText = "Канал";
+                dgvData.Columns[1].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dgvData.Columns[1].DefaultCellStyle.BackColor = Color.LightGray;
+                dgvData.Columns[1].DefaultCellStyle.Font = new Font(dgvData.DefaultCellStyle.Font, FontStyle.Regular);
+                dgvData.Columns[2].ReadOnly = true;
+                dgvData.Columns[2].HeaderText = "Дата"; // дата последних показаний
+                dgvData.Columns[2].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dgvData.Columns[2].DefaultCellStyle.BackColor = Color.LightGray;
+                dgvData.Columns[2].DefaultCellStyle.Font = new Font(dgvData.DefaultCellStyle.Font, FontStyle.Regular);
+                dgvData.Columns[3].ReadOnly = true;
+                dgvData.Columns[3].HeaderText = "Последние"; // последние показания
+                dgvData.Columns[3].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dgvData.Columns[3].DefaultCellStyle.BackColor = Color.LightGray;
+                dgvData.Columns[3].DefaultCellStyle.Font = new Font(dgvData.DefaultCellStyle.Font, FontStyle.Regular);
+                dgvData.Columns[4].ReadOnly = true;
+                dgvData.Columns[4].HeaderText = "Дата"; // дата предыдущих показаний
+                dgvData.Columns[4].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dgvData.Columns[4].DefaultCellStyle.BackColor = Color.LightGray;
+                dgvData.Columns[4].DefaultCellStyle.Font = new Font(dgvData.DefaultCellStyle.Font, FontStyle.Regular);
+                dgvData.Columns[5].ReadOnly = true;
+                dgvData.Columns[5].HeaderText = "Предыдущие"; // предыдущие показания
+                dgvData.Columns[5].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dgvData.Columns[5].DefaultCellStyle.BackColor = Color.LightGray;
+                dgvData.Columns[5].DefaultCellStyle.Font = new Font(dgvData.DefaultCellStyle.Font, FontStyle.Regular);
+                dgvData.Columns[6].ReadOnly = false;
+                dgvData.Columns[6].HeaderText = cal1.SelectionStart.ToShortDateString(); // запрошенные показания
+                dgvData.Columns[6].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                dgvData.Columns[6].DefaultCellStyle.BackColor = SystemColors.Window;
+                #endregion
+                totalCells = dgvData.RowCount;
+                foreach (Sensor s in sensors)
+                {
+                    dgvData[0, currentRow].Value = s.SensorCode;
+                    dgvData[1, currentRow].Value = s.SensorName;
+                    foreach (DataGridViewColumn col in dgvData.Columns)
+                    {
+                        dgvData[col.Index, currentRow].Style.Font = dgvData.DefaultCellStyle.Font;
+                        dgvData[col.Index, currentRow].Style.BackColor =
+                            col.DefaultCellStyle.BackColor;
+                    }
+                    currentRow++;
+                }
+            }
+            this.Cursor = Cursors.Default;
         }
 
         private void ClearTable()
@@ -378,11 +498,119 @@ namespace PiramidaAnalize
 
         private void cmdFromExcel_Click(object sender, EventArgs e)
         {
+            double consumption = 0;
+            System.Globalization.CultureInfo culture = System.Globalization.CultureInfo.CurrentCulture;
+            string currentValue = string.Empty;
+            double currentValueDouble = 0;
+            if (dataChanged)
+            {
+                if (MessageBox.Show("Все несохранённые данные, введённые вручную в таблице, будут утеряны\n" +
+                    "Вы уверены, что хотите загрузить данные из Excel?", "Подтверждение",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                {
+                    return;
+                }
+            }
             if (currentDevice > 0)
             {
-                Form frm = new frmImport(currentDevice, txtSelected.Text, cal1.SelectionStart);
-                frm.ShowDialog();
+                frmImport frm = new frmImport(currentDevice, txtSelected.Text,
+                    (this.opt12.Checked) ? 12 : 101,
+                    cal1.SelectionStart);
+                if (frm.ShowDialog() == DialogResult.OK)
+                {
+                    MakeEmptyTable(currentDevice, (this.opt12.Checked) ? 12 : 101);
+                    DataGridView dgvExcel = frm.Sheet;
+                    foreach (DataGridViewRow row in dgvExcel.Rows)
+                    {
+                        foreach (DataGridViewCell c in row.Cells)
+                        {
+                            if (this.opt12.Checked)
+                            {
+                                if (c.Value == null)
+                                {
+                                    dgvData[row.Index + 3, c.ColumnIndex].Tag = "Empty";
+                                    dgvData[row.Index + 3, c.ColumnIndex].ToolTipText = "";
+                                    dgvData[row.Index + 3, c.ColumnIndex].Style.BackColor = SystemColors.Window;
+                                    dgvData[row.Index + 3, c.ColumnIndex].Style.Font =
+                                        new Font(dgvData.DefaultCellStyle.Font, FontStyle.Regular);
+                                }
+                                else
+                                {
+                                    currentValue = c.Value.ToString();
+                                    currentValue = currentValue.Replace(" ", string.Empty);
+                                    currentValue = currentValue.Replace('.', culture.NumberFormat.NumberDecimalSeparator[0]);
+                                    currentValue = currentValue.Replace(',', culture.NumberFormat.NumberDecimalSeparator[0]);
+                                    if (double.TryParse(currentValue, System.Globalization.NumberStyles.Float,
+                                        culture.NumberFormat, out currentValueDouble))
+                                    {
+                                        dgvData[row.Index + 3, c.ColumnIndex].Value = currentValueDouble;
+                                        dgvData[row.Index + 3, c.ColumnIndex].Style.BackColor = SystemColors.Window;
+                                        dgvData[row.Index + 3, c.ColumnIndex].ToolTipText = "";
+                                        dgvData[row.Index + 3, c.ColumnIndex].Tag = "Update";
+                                        consumption += currentValueDouble;
+                                    }
+                                    else
+                                    {
+                                        dgvData[row.Index + 3, c.ColumnIndex].Style.BackColor = Color.Red;
+                                        dgvData[row.Index + 3, c.ColumnIndex].ToolTipText =
+                                            "Программа не воспринимает данное значение как число";
+                                        dgvData[row.Index + 3, c.ColumnIndex].Tag = "Ignore";
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (c.Value == null)
+                                {
+                                    dgvData[6, c.ColumnIndex].ToolTipText = "";
+                                    dgvData[6, c.ColumnIndex].Tag = "Empty";
+                                    dgvData[6, c.ColumnIndex].Style.BackColor = SystemColors.Window;
+                                    dgvData[6, c.ColumnIndex].Style.Font =
+                                        new Font(dgvData.DefaultCellStyle.Font, FontStyle.Regular);
+                                }
+                                else
+                                {
+                                    currentValue = c.Value.ToString();
+                                    currentValue = currentValue.Replace(" ", string.Empty);
+                                    currentValue = currentValue.Replace('.', culture.NumberFormat.NumberDecimalSeparator[0]);
+                                    currentValue = currentValue.Replace(',', culture.NumberFormat.NumberDecimalSeparator[0]);
+                                    if (double.TryParse(currentValue, System.Globalization.NumberStyles.Float,
+                                        culture.NumberFormat, out currentValueDouble))
+                                    {
+                                        dgvData[6, c.ColumnIndex].Value = currentValueDouble;
+                                        dgvData[6, c.ColumnIndex].Style.BackColor = SystemColors.Window;
+                                        dgvData[6, c.ColumnIndex].ToolTipText = "";
+                                        dgvData[6, c.ColumnIndex].Tag = "Update";
+                                    }
+                                    else
+                                    {
+                                        dgvData[6, c.ColumnIndex].Style.BackColor = Color.Red;
+                                        dgvData[6, c.ColumnIndex].ToolTipText =
+                                            "Программа не воспринимает данное значение как число";
+                                        dgvData[6, c.ColumnIndex].Tag = "Ignore";
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (opt12.Checked)
+                    {
+                        foreach (DataGridViewRow row in dgvData.Rows)
+                        {
+                            consumption = 0;
+                            foreach (DataGridViewCell c in row.Cells)
+                                if (c.Tag != null && c.Tag.ToString() == "Update")
+                                    consumption += double.Parse(c.Value.ToString());
+                            row.Cells[2].Style.Font = new
+                                Font(dgvData.DefaultCellStyle.Font, FontStyle.Bold);
+                            row.Cells[2].Value = consumption / 2;
+                        }
+                    }
+                    dgvData.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
+                    dgvExcel.Rows.Clear();
+                }
             }
+            dataChanged = false;
         }
     }
 }

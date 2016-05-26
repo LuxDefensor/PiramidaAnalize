@@ -36,24 +36,25 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.lstSensors = new System.Windows.Forms.ListBox();
+            this.dgvSheet = new System.Windows.Forms.DataGridView();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolOpen = new System.Windows.Forms.ToolStripButton();
-            this.cboParameter = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.lblDevice = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.lblDate = new System.Windows.Forms.ToolStripLabel();
             this.dlgOpen = new System.Windows.Forms.OpenFileDialog();
-            this.dgvSheet = new System.Windows.Forms.DataGridView();
+            this.lblParameter = new System.Windows.Forms.ToolStripLabel();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvSheet)).BeginInit();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvSheet)).BeginInit();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -135,6 +136,19 @@
             this.lstSensors.Size = new System.Drawing.Size(249, 210);
             this.lstSensors.TabIndex = 2;
             // 
+            // dgvSheet
+            // 
+            this.dgvSheet.AllowUserToAddRows = false;
+            this.dgvSheet.AllowUserToDeleteRows = false;
+            this.dgvSheet.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvSheet.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvSheet.Location = new System.Drawing.Point(258, 3);
+            this.dgvSheet.Name = "dgvSheet";
+            this.dgvSheet.ReadOnly = true;
+            this.tableLayoutPanel1.SetRowSpan(this.dgvSheet, 2);
+            this.dgvSheet.Size = new System.Drawing.Size(610, 426);
+            this.dgvSheet.TabIndex = 3;
+            // 
             // toolStripContainer1
             // 
             this.toolStripContainer1.BottomToolStripPanelVisible = false;
@@ -163,14 +177,15 @@
             this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolOpen,
-            this.cboParameter,
             this.toolStripSeparator1,
-            this.lblDevice,
+            this.lblParameter,
             this.toolStripSeparator2,
+            this.lblDevice,
+            this.toolStripSeparator3,
             this.lblDate});
             this.toolStrip1.Location = new System.Drawing.Point(3, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(494, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(384, 25);
             this.toolStrip1.TabIndex = 0;
             // 
             // toolOpen
@@ -180,15 +195,6 @@
             this.toolOpen.Name = "toolOpen";
             this.toolOpen.Size = new System.Drawing.Size(74, 22);
             this.toolOpen.Text = "Открыть";
-            // 
-            // cboParameter
-            // 
-            this.cboParameter.Items.AddRange(new object[] {
-            "Получасовки (12)",
-            "Зафиксированные показания (101)"});
-            this.cboParameter.Name = "cboParameter";
-            this.cboParameter.Size = new System.Drawing.Size(200, 25);
-            this.cboParameter.Text = "Получасовки (12)";
             // 
             // toolStripSeparator1
             // 
@@ -217,18 +223,16 @@
             this.dlgOpen.Filter = "Файлы Excel|*.xls;*.xlsx";
             this.dlgOpen.Title = "Выберите файл с данными";
             // 
-            // dgvSheet
+            // lblParameter
             // 
-            this.dgvSheet.AllowUserToAddRows = false;
-            this.dgvSheet.AllowUserToDeleteRows = false;
-            this.dgvSheet.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvSheet.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgvSheet.Location = new System.Drawing.Point(258, 3);
-            this.dgvSheet.Name = "dgvSheet";
-            this.dgvSheet.ReadOnly = true;
-            this.tableLayoutPanel1.SetRowSpan(this.dgvSheet, 2);
-            this.dgvSheet.Size = new System.Drawing.Size(610, 426);
-            this.dgvSheet.TabIndex = 3;
+            this.lblParameter.Name = "lblParameter";
+            this.lblParameter.Size = new System.Drawing.Size(86, 22);
+            this.lblParameter.Text = "toolStripLabel1";
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
             // 
             // frmImport
             // 
@@ -250,6 +254,7 @@
             this.tableLayoutPanel1.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgvSheet)).EndInit();
             this.toolStripContainer1.ContentPanel.ResumeLayout(false);
             this.toolStripContainer1.TopToolStripPanel.ResumeLayout(false);
             this.toolStripContainer1.TopToolStripPanel.PerformLayout();
@@ -257,7 +262,6 @@
             this.toolStripContainer1.PerformLayout();
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvSheet)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -272,7 +276,6 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Button cmdOK;
         private System.Windows.Forms.Button cmdCancel;
-        private System.Windows.Forms.ToolStripComboBox cboParameter;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripLabel lblDevice;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
@@ -281,5 +284,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ListBox lstSensors;
         private System.Windows.Forms.DataGridView dgvSheet;
+        private System.Windows.Forms.ToolStripLabel lblParameter;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
     }
 }
