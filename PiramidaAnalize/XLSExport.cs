@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Excel = Microsoft.Office.Interop.Excel;
+using System.Data;
 
 namespace PiramidaAnalize
 {
@@ -40,7 +41,7 @@ namespace PiramidaAnalize
             int completed = 0;
             double halfhour;
             Dictionary<string, string> sensorInfo;
-            System.Data.DataSet halfhours;
+            DataSet halfhours;
             xls = new Excel.Application();
             xls.SheetsInNewWorkbook = 1;
             wb = xls.Workbooks.Add();            
@@ -120,7 +121,7 @@ namespace PiramidaAnalize
                         ws.Cells[currentRow, currentColumn] = "";
                     else
                         ws.Cells[currentRow, currentColumn] = halfhour;
-                    //foreach (System.Data.DataRow row in halfhours.Tables[0].Rows)
+                    //foreach (DataRow row in halfhours.Tables[0].Rows)
                     //{
                     //    ws.Cells[currentRow, currentColumn] = row["value0"];
                     //    currentRow++;
@@ -539,7 +540,7 @@ namespace PiramidaAnalize
             int totalSensors = selectedSensors.Count;
             int totalRows;
             Dictionary<string, string> sensorInfo;
-            System.Data.DataSet fixedData;
+            DataSet fixedData;
             double ktr;
             xls = new Excel.Application();
             xls.SheetsInNewWorkbook = 1;
@@ -583,7 +584,7 @@ namespace PiramidaAnalize
                 fixedData = d.GetFixedData(long.Parse(sensorInfo["DeviceCode"]),
                                long.Parse(sensorInfo["SensorCode"]), dtStart, dtEnd);
                 ktr = d.GetKTR(sensorID);
-                foreach (System.Data.DataRow row in fixedData.Tables[0].Rows)
+                foreach (DataRow row in fixedData.Tables[0].Rows)
                 {
                     currentDate = DateTime.Parse(row["data_date"].ToString());
                     currentRow = (int)currentDate.Subtract(dtStart).TotalDays + firstRow;
@@ -864,6 +865,256 @@ namespace PiramidaAnalize
             ws.UsedRange.Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
             xls.Visible = true;
             c = (Excel.Range)ws.Cells[firstRow, 3];
+            c.Select();
+            Excel.Windows xlsWindows = wb.Windows;
+            Excel.Window xlsWindow = xlsWindows[1];
+            xlsWindow.FreezePanes = true;
+            xlsWindow.Activate();
+            releaseObject(ws);
+            releaseObject(wb);
+            releaseObject(xls);
+        }
+
+        public void OutputBalance(long balanceNo,DateTime dateFrom,DateTime dateTill)
+        {
+            // Американская культура нужна для корректного экспорта разделителей целой части
+            // из double в string и далее в Excel
+            System.Globalization.CultureInfo culture = 
+                System.Globalization.CultureInfo.CreateSpecificCulture("en-US");
+            Excel.Range c;
+            double consumption = 0;
+            int totalRows, completed;
+            string balanceTitle = d.GetBalanceName(balanceNo);
+            frmProgress progress = new frmProgress();
+            progress.Show();
+            DataSet details = d.GetBalanceDetails(balanceNo);
+            totalRows = details.Tables[0].Rows.Count;
+            completed = 0;
+            xls = new Excel.Application();
+            xls.SheetsInNewWorkbook = 1;
+            wb = xls.Workbooks.Add();
+            Excel.Worksheet ws = (Excel.Worksheet)wb.Worksheets[1];
+            #region Worksheet layout
+            ws.Name = "Баланс";
+            ws.Cells[1, 1] = balanceTitle;
+            ws.Cells[2, 1] = string.Format("За период с {0} по {1}",
+                dateFrom.ToShortDateString(), dateTill.ToShortDateString());
+            ws.Cells[4, 1] = "№ п/п";
+            ws.Cells[4, 2] = "Приём";
+            c = ws.Range["B4", "C4"];
+            c.Merge();
+            c = ws.Range["D4", "F4"];
+            c.Merge();
+            c.Value = "Потребление";
+            c = ws.Range["G4", "H4"];
+            c.Merge();
+            c.Value = "Отдача";
+            ws.Cells[4, 9] = "№ п/п";
+            ws.Cells[5, 2] = "ПС";
+            ws.Cells[5, 3] = "Канал";
+            ws.Cells[5, 4] = "кВт·ч";
+            ws.Cells[5, 7] = "ПС";
+            ws.Cells[5, 8] = "Канал";
+            ws.Cells[5, 6] = "кВт·ч";
+            c = ws.Range["A4", "I5"];
+            c.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
+            c = (Excel.Range)ws.Cells[1, 1];
+            c.ColumnWidth = 6;
+            c = (Excel.Range)ws.Cells[1, 2];
+            c.ColumnWidth = 30;
+            c = (Excel.Range)ws.Cells[1, 3];
+            c.ColumnWidth = 30;
+            c = (Excel.Range)ws.Cells[1, 4];
+            c.ColumnWidth = 16;
+            c = (Excel.Range)ws.Cells[1, 5];
+            c.ColumnWidth = 1;
+            c = (Excel.Range)ws.Cells[1, 6];
+            c.ColumnWidth = 16;
+            c = (Excel.Range)ws.Cells[1, 7];
+            c.ColumnWidth = 30;
+            c = (Excel.Range)ws.Cells[1, 8];
+            c.ColumnWidth = 30;
+            c = (Excel.Range)ws.Cells[1, 9];
+            c.ColumnWidth = 6;
+            #endregion
+            int currentRowLeft = 6;
+            int currentRowRight = 6;
+            progress.SetProgress(1);
+            foreach (DataRow row in details.Tables[0].Rows)
+            {
+                if (row.Field<Int16>(3) == 12)
+                {
+                    consumption = d.GetConsumption(row.Field<int>(4),
+                       row.Field<int>(5), dateFrom, dateTill);
+                }
+                else
+                {
+                    consumption = d.GetConsumptionFixed(row.Field<int>(4),
+                        row.Field<int>(5), dateFrom, dateTill);
+                }
+                if (row.Field<Int16>(0) == -1)
+                {
+                    ws.Cells[currentRowRight, 9] = currentRowRight - 5;
+                    ws.Cells[currentRowRight, 7] = row[1].ToString();
+                    ws.Cells[currentRowRight, 8] = row[2].ToString();
+                    ws.Cells[currentRowRight, 6] = consumption.ToString(culture.NumberFormat);
+                    currentRowRight++;
+                }
+                else
+                {
+                    ws.Cells[currentRowLeft, 1] = currentRowLeft - 5;
+                    ws.Cells[currentRowLeft, 2] = row[1].ToString();
+                    ws.Cells[currentRowLeft, 3] = row[2].ToString();
+                    ws.Cells[currentRowLeft, 4] = consumption.ToString(culture.NumberFormat);
+                    currentRowLeft++;
+                }
+                completed++;
+                progress.SetProgress(100 * completed / totalRows);
+            }
+            int lastRow = Math.Max(currentRowLeft, currentRowRight);
+            ws.Cells[lastRow, 3] = "Итого приём";
+            c = (Excel.Range)ws.Cells[lastRow, 4];
+            c.FormulaR1C1 = string.Format("=SUM(R[-{0}]C:R[-1]C)", lastRow - 6);
+            c = (Excel.Range)ws.Cells[lastRow, 6];
+            c.FormulaR1C1 = string.Format("=SUM(R[-{0}]C:R[-1]C)", lastRow - 6);
+            ws.Cells[lastRow, 7] = "Итого отдача";
+            ws.Cells[lastRow + 1, 2] = "Небаланс";
+            c = (Excel.Range)ws.Cells[lastRow + 1, 4];
+            c.FormulaR1C1 = "=(ABS(R[-1]C[2]-R[-1]C))";
+            c = (Excel.Range)ws.Cells[lastRow + 1, 6];
+            c.FormulaR1C1 = "=RC[-2]/R[-1]C[-2]*100";
+            ws.Cells[lastRow + 1, 5] = "=";
+            ws.Cells[lastRow + 1, 7] = "%";
+            c = (Excel.Range)ws.Cells[6, 4];
+            c = c.Resize[lastRow, 3];
+            c.NumberFormat = "#,##0.00";
+            c = (Excel.Range)ws.Cells[lastRow + 1, 6];
+            c.NumberFormat = "#.00";
+            c.CurrentRegion.Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
+            progress.SetProgress(100);
+            xls.Visible = true;
+            c = (Excel.Range)ws.Cells[1, 1];
+            c.Select();
+            Excel.Windows xlsWindows = wb.Windows;
+            Excel.Window xlsWindow = xlsWindows[1];
+            xlsWindow.Activate();
+            progress.Close();
+            releaseObject(ws);
+            releaseObject(wb);
+            releaseObject(xls);
+        }
+
+        public void OutputBalanceList(DateTime dateFrom, DateTime dateTill, double threshold)
+        {
+            DataSet list = d.GetAllBalances(true);
+            DataSet details;
+            // Американская культура нужна для корректного экспорта разделителей целой части
+            // из double в string и далее в Excel
+            System.Globalization.CultureInfo culture =
+                System.Globalization.CultureInfo.CreateSpecificCulture("en-US");
+            Excel.Range c;
+            double consumptionPlus, consumptionMinus, consumption;
+            int totalRows, currentRow;
+            frmProgress progress = new frmProgress();
+            progress.Show();
+            totalRows = list.Tables[0].Rows.Count;
+            xls = new Excel.Application();
+            xls.SheetsInNewWorkbook = 1;
+            wb = xls.Workbooks.Add();
+            Excel.Worksheet ws = (Excel.Worksheet)wb.Worksheets[1];
+            #region Worksheet layout
+            ws.Cells[1, 1] = "Результаты составления балансов по данным АИИС КУЭ «Ставропольэнерго»";
+            ws.Cells[2, 1] = string.Format("за период с {0} по {1}", dateFrom, dateTill);
+            ws.Cells[4, 1] = "№ п/п";
+            ws.Cells[4, 2] = "Название баланса";
+            ws.Cells[4, 3] = "Приём";
+            ws.Cells[4, 4] = "Отдача";
+            ws.Cells[4, 5] = "Сальдо";
+            ws.Cells[4, 6] = "%";
+            c = ws.Range["A4", "F4"];
+            c.HorizontalAlignment = Excel.XlHAlign.xlHAlignCenter;
+            c.Font.Bold = true;
+            c.Interior.Color = System.Drawing.Color.LightGray;
+            #endregion
+            currentRow = 5;
+            foreach (DataRow row in list.Tables[0].Rows)
+            {
+                ws.Cells[currentRow, 1] = currentRow - 4;
+                ws.Cells[currentRow, 2] = row[1].ToString();
+                details = d.GetBalanceDetails((int)row[0]);
+                consumptionPlus = 0;
+                consumptionMinus = 0;
+                consumption = 0;
+                foreach (DataRow detail in details.Tables[0].Rows)
+                {
+                    if ((Int16)detail[3] == 12) // parameter
+                    {
+                        consumption = d.GetConsumption((int)detail[4], (int)detail[5],
+                            dateFrom, dateTill);
+                    }
+                    else
+                    {
+                        consumption = d.GetConsumptionFixed((int)detail[4], (int)detail[5],
+                            dateFrom, dateTill.AddDays(1));
+                    }
+                    if ((Int16)detail[0] < 0) // sign
+                    {
+                        if (consumption >= 0)
+                            consumptionMinus += consumption;
+                        else
+                        {
+                            c=(Excel.Range)ws.Cells[currentRow, 4];
+                            c.Interior.Color = System.Drawing.Color.Pink;
+                        }
+                    }
+                    else
+                    {
+                        if (consumption >= 0)
+                            consumptionPlus += consumption;
+                        else
+                        {
+                            c = (Excel.Range)ws.Cells[currentRow, 3];
+                            c.Interior.Color = System.Drawing.Color.Pink;
+                        }
+                    }
+                }
+                ws.Cells[currentRow, 3] = consumptionPlus;
+                ws.Cells[currentRow, 4] = consumptionMinus;
+                c = (Excel.Range)ws.Cells[currentRow, 5];
+                c.FormulaR1C1 = "=ABS(RC[-2]-RC[-1])";
+                c = (Excel.Range)ws.Cells[currentRow, 6];
+                c.FormulaR1C1 = "=100*RC[-1]/MAX(RC[-3],RC[-2],1)";
+                progress.SetProgress(100 * (currentRow - 4) / totalRows);
+                currentRow++;
+            }
+            progress.SetProgress(100); 
+            c = (Excel.Range)ws.Cells[currentRow, 5];
+            c = ws.Range["C5", c];
+            c.NumberFormat = "#,##0";
+            c = (Excel.Range)ws.Cells[currentRow, 6];
+            c = ws.Range["F5", c];
+            c.NumberFormat = "0.00";
+            Excel.FormatCondition condition =
+                        (Excel.FormatCondition)c.FormatConditions.Add(Excel.XlFormatConditionType.xlCellValue,
+                                                                      Excel.XlFormatConditionOperator.xlGreaterEqual,
+                                                                      threshold.ToString(culture.NumberFormat));
+            condition.Font.Color = System.Drawing.Color.Red;
+            c = (Excel.Range)ws.Cells[5, 1];
+            c.CurrentRegion.Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
+            c.ColumnWidth = 8;
+            c = (Excel.Range)ws.Cells[5, 2];
+            c.ColumnWidth = 50;
+            c = (Excel.Range)ws.Cells[5, 3];
+            c.ColumnWidth = 12;
+            c = (Excel.Range)ws.Cells[5, 4];
+            c.ColumnWidth = 12;
+            c = (Excel.Range)ws.Cells[5, 5];
+            c.ColumnWidth = 12;
+            c = (Excel.Range)ws.Cells[5, 6];
+            c.ColumnWidth = 8;
+            progress.Close();
+            xls.Visible = true;
+            c = (Excel.Range)ws.Cells[5, 1];
             c.Select();
             Excel.Windows xlsWindows = wb.Windows;
             Excel.Window xlsWindow = xlsWindows[1];

@@ -8,6 +8,7 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Windows.Forms;
@@ -104,6 +105,7 @@ namespace PiramidaAnalize
                                 break;
                             }
                     }
+                    
                     //if (resultNode.Tag.ToString()[0] == 'F') resultNode.BackColor = System.Drawing.Color.Yellow;
                 }
             }
@@ -230,7 +232,7 @@ namespace PiramidaAnalize
             sql.AppendLine("SELECT ID, Code, Name FROM Devices");
             sql.AppendFormat("WHERE FolderID={0}", folderID);
             
-            if (cn.State != System.Data.ConnectionState.Open)
+            if (cn.State != ConnectionState.Open)
                 cn.Open();
             cmdDevices = cn.CreateCommand();
             cmdDevices.CommandText = sql.ToString();
@@ -269,7 +271,7 @@ namespace PiramidaAnalize
             StringBuilder sql = new StringBuilder();
             sql.AppendLine("SELECT ID, Name FROM Folders");
             sql.AppendFormat("WHERE ParentID={0}", folderID);
-            if (cn.State != System.Data.ConnectionState.Open)
+            if (cn.State != ConnectionState.Open)
                 cn.Open();
             cmdFolders = cn.CreateCommand();
             cmdFolders.CommandText = sql.ToString();
@@ -300,7 +302,7 @@ namespace PiramidaAnalize
 		{
             SqlConnection cn = new SqlConnection(connectionString);
             SqlCommand cmdSensors;
-            if (cn.State != System.Data.ConnectionState.Open)
+            if (cn.State != ConnectionState.Open)
                 cn.Open();
 			StringBuilder sql=new StringBuilder();
 			sql.Append("select sensors.id,sensors.code,subdevices.name,sensors.name ");
@@ -311,7 +313,7 @@ namespace PiramidaAnalize
             cmdSensors = cn.CreateCommand();
 			cmdSensors.CommandText=sql.ToString();			
 			SqlDataAdapter daSensors=new SqlDataAdapter(cmdSensors);
-			System.Data.DataSet dsSensors=new System.Data.DataSet();
+			DataSet dsSensors=new DataSet();
 			daSensors.Fill(dsSensors);
 			grid.DataSource=dsSensors;	
 			grid.DataMember=dsSensors.Tables[0].TableName;
@@ -342,7 +344,7 @@ namespace PiramidaAnalize
 			sql.Append("FROM Sensors inner join Devices on sensors.stationID=devices.ID ");
 			sql.Append("WHERE Sensors.ID=");
 			sql.Append(sensorID.ToString());
-            if (cn.State != System.Data.ConnectionState.Open)
+            if (cn.State != ConnectionState.Open)
                 cn.Open();
             cmdSensors = cn.CreateCommand();
 			cmdSensors.CommandText=sql.ToString();
@@ -372,7 +374,7 @@ namespace PiramidaAnalize
 			sql.Append("GROUP BY cast(left(data_date,11) as datetime) ORDER BY 1");
 			cmdSensors.CommandText=sql.ToString();
 			SqlDataAdapter daSensors=new SqlDataAdapter(cmdSensors);
-			System.Data.DataSet dsSensors=new System.Data.DataSet();
+			DataSet dsSensors=new DataSet();
 			daSensors.Fill(dsSensors);
 			grid.DataSource=dsSensors;
 			grid.DataMember=dsSensors.Tables[0].TableName;
@@ -400,15 +402,15 @@ namespace PiramidaAnalize
 		/// <param name="sensorID">The given sensor's ID</param>
 		/// <param name="day1">The day for which the chart will be plotted</param>
 		/// <returns>The dataset containing all the data points for the chart</returns>
-        public System.Data.DataSet DrawDayGraph(long sensorID, DateTime day1)
+        public DataSet DrawDayGraph(long sensorID, DateTime day1)
 		{
             SqlConnection cn = new SqlConnection(connectionString);
             SqlCommand cmdSensors;
-            System.Data.DataSet result=new System.Data.DataSet();
+            DataSet result=new DataSet();
             Dictionary<string, string> sensor = SensorInfo(sensorID);
             long deviceCode = long.Parse(sensor["DeviceCode"]);
             long sensorCode = long.Parse(sensor["SensorCode"]);
-            if (cn.State != System.Data.ConnectionState.Open)
+            if (cn.State != ConnectionState.Open)
                 cn.Open();
 			StringBuilder sql=new StringBuilder();
             cmdSensors = cn.CreateCommand();
@@ -427,7 +429,7 @@ namespace PiramidaAnalize
 			cmdSensors.CommandText=sql.ToString();
 			SqlDataAdapter daSensors=new SqlDataAdapter(cmdSensors);
 			daSensors.Fill(result);
-            System.Data.DataRow[] row = result.Tables[0].Select("time='00:00'");            
+            DataRow[] row = result.Tables[0].Select("time='00:00'");            
             if (row.Length==1)
                 row[0]["number"] = 48;
 			cn.Close();
@@ -466,7 +468,7 @@ namespace PiramidaAnalize
             cmdSensors.CommandText = sql.ToString();
             try
             {
-                drSensors = cmdSensors.ExecuteReader(System.Data.CommandBehavior.SingleRow);
+                drSensors = cmdSensors.ExecuteReader(CommandBehavior.SingleRow);
             }
             catch (Exception e)
             {
@@ -498,7 +500,7 @@ namespace PiramidaAnalize
             SqlConnection cn = new SqlConnection(connectionString);
             SqlCommand cmdDevices;
             object ret;
-            if (cn.State != System.Data.ConnectionState.Open)
+            if (cn.State != ConnectionState.Open)
                 cn.Open();
             cmdDevices = cn.CreateCommand();
             StringBuilder sql = new StringBuilder();
@@ -516,18 +518,43 @@ namespace PiramidaAnalize
         /// <summary>
         /// Returns the device's ID by its code
         /// </summary>
-        /// <param name="code">Device's code ([Code[ field in the Devices table)</param>
+        /// <param name="code">Device's code ([Code] field in the Devices table)</param>
         /// <returns>Device's ID ([ID] field in the Devices table)</returns>
         public long GetID(long code)
         {
             SqlConnection cn = new SqlConnection(connectionString);
             SqlCommand cmdDevices;
             object ret;
-            if (cn.State != System.Data.ConnectionState.Open)
+            if (cn.State != ConnectionState.Open)
                 cn.Open();
             cmdDevices = cn.CreateCommand();
             StringBuilder sql = new StringBuilder();
             sql.AppendFormat("SELECT ID FROM Devices WHERE Code={0}", code);
+            cmdDevices.CommandText = sql.ToString();
+            ret = cmdDevices.ExecuteScalar();
+            cn.Close();
+            if (ret == null)
+                return -1;
+            else
+                return long.Parse(ret.ToString());
+        }
+
+        /// <summary>
+        /// Returns the sensor's ID by its and device's codes
+        /// </summary>
+        /// <param name="deviceCode">Device's code ([Code] field in the Devices table)</param>
+        /// <param name="sensorCode">Sensor's's code ([Code] field in the Sensors table)</param>
+        /// <returns>Device's ID ([ID] field in the Devices table)</returns>
+        public long GetSensorID(long deviceCode, long sensorCode)
+        {
+            SqlConnection cn = new SqlConnection(connectionString);
+            SqlCommand cmdDevices;
+            object ret;
+            cn.Open();
+            cmdDevices = cn.CreateCommand();
+            StringBuilder sql = new StringBuilder();
+            sql.Append("SELECT Sensors.ID SensorID FROM Devices INNER JOIN Sensors ON StationID=Devices.ID ");
+            sql.AppendFormat("WHERE Devices.Code={0} AND Sensors.Code={1}", deviceCode, sensorCode);
             cmdDevices.CommandText = sql.ToString();
             ret = cmdDevices.ExecuteScalar();
             cn.Close();
@@ -556,7 +583,7 @@ namespace PiramidaAnalize
             sql.Append("s ");
             sql.Append("WHERE ID=");
             sql.Append(objectID.ToString());
-            if (cn.State != System.Data.ConnectionState.Open)
+            if (cn.State != ConnectionState.Open)
                 cn.Open();
             cmdSensors = cn.CreateCommand();
             cmdSensors.CommandText = sql.ToString();
@@ -586,12 +613,12 @@ namespace PiramidaAnalize
             sql.Append(",'");
             sql.Append(day1.ToString("yyyyMMdd"));
             sql.Append("',12)");
-            if (cn.State != System.Data.ConnectionState.Open)
+            if (cn.State != ConnectionState.Open)
                 cn.Open();
             cmdDevices = cn.CreateCommand();
             cmdDevices.CommandText = sql.ToString();
             SqlDataAdapter daDevices = new SqlDataAdapter(cmdDevices);
-            System.Data.DataSet dsDevices = new System.Data.DataSet();
+            DataSet dsDevices = new DataSet();
             daDevices.Fill(dsDevices);
             grid.DataSource = dsDevices;
             grid.DataMember = dsDevices.Tables[0].TableName;
@@ -668,12 +695,12 @@ namespace PiramidaAnalize
         /// <param name="dtStart">Начало периода выгрузки</param>
         /// <param name="dtEnd">Конец периода выгрузки</param>
         /// <returns>Датасет, содержащий получасовки, выгруженные из БД</returns>
-        public System.Data.DataSet GetHalfhours(long deviceCode, long sensorCode, DateTime dtStart, DateTime dtEnd)
+        public DataSet GetHalfhours(long deviceCode, long sensorCode, DateTime dtStart, DateTime dtEnd)
         {
             SqlConnection cn = new SqlConnection(connectionString);
             SqlCommand cmdSensors;
-            System.Data.DataSet result = new System.Data.DataSet();
-            if (cn.State != System.Data.ConnectionState.Open)
+            DataSet result = new DataSet();
+            if (cn.State != ConnectionState.Open)
                 cn.Open();            
             cmdSensors = cn.CreateCommand();
             StringBuilder sql = new StringBuilder();
@@ -700,12 +727,12 @@ namespace PiramidaAnalize
         /// </summary>
         /// <param name="dtDay">День, за который выгружаются данные</param>
         /// <returns>Датасет, содержащий получасовки, выгруженные из БД</returns>
-        public System.Data.DataSet GetHalfhoursDailyPivot(long deviceCode, DateTime dtDay)
+        public DataSet GetHalfhoursDailyPivot(long deviceCode, DateTime dtDay)
         {
             SqlConnection cn = new SqlConnection(connectionString);
             SqlCommand cmdSensors;
-            System.Data.DataSet result = new System.Data.DataSet();
-            if (cn.State != System.Data.ConnectionState.Open)
+            DataSet result = new DataSet();
+            if (cn.State != ConnectionState.Open)
                 cn.Open();
             cmdSensors = cn.CreateCommand();
 
@@ -774,7 +801,7 @@ namespace PiramidaAnalize
                 }
                 else
                 {
-                    foreach (System.Data.DataRow row in result.Tables[0].Rows)
+                    foreach (DataRow row in result.Tables[0].Rows)
                     {
                         var query = from s in sensors
                                     where s.SensorCode == (int)row[0]
@@ -799,13 +826,12 @@ namespace PiramidaAnalize
         /// </summary>
         /// <param name="dtDay">День, за который выгружаются данные</param>
         /// <returns>Датасет, содержащий получасовки, выгруженные из БД</returns>
-        public System.Data.DataSet GetHalfhoursDaily(long deviceCode, long sensorCode, DateTime dtDay)
+        public DataSet GetHalfhoursDaily(long deviceCode, long sensorCode, DateTime dtDay)
         {
-            //TODO какая-то из функций по получасовкам выдает их со сдвигом, если в сутках есть недосбор
             SqlConnection cn = new SqlConnection(connectionString);
             SqlCommand cmdSensors;
-            System.Data.DataSet result = new System.Data.DataSet();
-            if (cn.State != System.Data.ConnectionState.Open)
+            DataSet result = new DataSet();
+            if (cn.State != ConnectionState.Open)
                 cn.Open();
             cmdSensors = cn.CreateCommand();
             StringBuilder sql = new StringBuilder();
@@ -858,7 +884,7 @@ namespace PiramidaAnalize
             sql.Append(" 00:30' and '");
             sql.Append(dtEnd.AddDays(1).ToString("yyyyMMdd"));
             sql.Append("'");  
-            if(cn.State==System.Data.ConnectionState.Closed)          
+            if(cn.State==ConnectionState.Closed)          
                 cn.Open();
             cmdData = cn.CreateCommand();
             cmdData.CommandText = sql.ToString();
@@ -874,6 +900,48 @@ namespace PiramidaAnalize
                 returnValue = -1;
             }
             return returnValue;            
+        }
+
+        /// <summary>
+        /// Вычисляет потребление по заданному каналу за период как разность конечных и
+        /// начальных зафиксированных показаний с учётом коэффициента трансформации
+        /// </summary>
+        /// <param name="deviceCode">Код устройства (поле CODE в таблице Devices)</param>
+        /// <param name="sensorCode">Код канала (поле CODE в таблице Sensors)</param>
+        /// <param name="dtStart">Начало периода</param>
+        /// <param name="dtEnd">Конец периода</param>
+        /// <returns>Потребление в кВт·ч или -1 при ошибке</returns>
+        public double GetConsumptionFixed(long deviceCode, long sensorCode, DateTime dtStart, DateTime dtEnd)
+        {
+            double returnValue;
+            double ktr, firstVal, secondVal;
+            StringBuilder sql = new StringBuilder();
+            sql.Append("select koef from ktr inner join sensors on ktr.sensorid=sensors.id ");
+            sql.Append("inner join devices on devices.id=sensors.stationid ");
+            sql.AppendFormat("where devices.code={0} and sensors.code={1} ", deviceCode, sensorCode);
+            SqlConnection cn = new SqlConnection(connectionString);
+            cn.Open();
+            SqlCommand cmd = cn.CreateCommand();
+            cmd.CommandText = sql.ToString();
+            try
+            {
+                ktr = (double)cmd.ExecuteScalar();
+            }
+            catch
+            {
+                return -1;
+            }
+            sql.Clear();
+            if (cn.State == ConnectionState.Open)
+                cn.Close();
+            firstVal = GetOneFixedData(deviceCode, sensorCode, dtStart);
+            secondVal = GetOneFixedData(deviceCode, sensorCode, dtEnd);
+            if (firstVal < 0 || secondVal < 0)
+            {
+                return -1;
+            }
+            returnValue = (secondVal - firstVal) * ktr;
+            return returnValue;
         }
 
         /// <summary>
@@ -915,7 +983,7 @@ namespace PiramidaAnalize
             sql.AppendLine();
             sql.AppendFormat("AND Data_date BETWEEN '{0} 00:30' AND '{1}'", 
                 theDay.ToString("yyyyMMdd"), theDay.AddDays(1).ToString("yyyyMMdd"));
-            if (cn.State != System.Data.ConnectionState.Open)
+            if (cn.State != ConnectionState.Open)
                 cn.Open();
             cmdData = cn.CreateCommand();
             cmdData.CommandText = sql.ToString();
@@ -942,7 +1010,7 @@ namespace PiramidaAnalize
             SqlConnection cn = new SqlConnection(connectionString);
             SqlCommand cmdData;
             object result;            
-            if (cn.State != System.Data.ConnectionState.Open)
+            if (cn.State != ConnectionState.Open)
                 cn.Open();
             cmdData = cn.CreateCommand();
             cmdData.CommandText = string.Format("SELECT Koef FROM KTR WHERE SensorID={0}", sensorID);
@@ -974,7 +1042,7 @@ namespace PiramidaAnalize
             cn.Open();
             SqlCommand cmd = cn.CreateCommand();
             cmd.CommandText = sql.ToString();
-            drData = cmd.ExecuteReader(System.Data.CommandBehavior.SingleRow);
+            drData = cmd.ExecuteReader(CommandBehavior.SingleRow);
             if (drData.Read())
                 result = drData.GetDouble(0);
             drData.Close();
@@ -991,11 +1059,11 @@ namespace PiramidaAnalize
         /// <param name="dtStart">Дата начала периода</param>
         /// <param name="dtEnd">Дата окончания периода</param>
         /// <returns>Датасет с показаниями и датами</returns>
-        public System.Data.DataSet GetFixedData(long deviceCode, long sensorCode, DateTime dtStart, DateTime dtEnd)
+        public DataSet GetFixedData(long deviceCode, long sensorCode, DateTime dtStart, DateTime dtEnd)
         {
             SqlConnection cn = new SqlConnection(connectionString);
             SqlCommand cmdData;
-            System.Data.DataSet result = new System.Data.DataSet();
+            DataSet result = new DataSet();
             StringBuilder sql = new StringBuilder();
             sql.AppendLine("select data_date, VALUE0 from data");
             sql.AppendLine("where PARNUMBER=101");
@@ -1005,7 +1073,7 @@ namespace PiramidaAnalize
                 dtStart.ToString("yyyyMMdd"), dtEnd.ToString("yyyyMMdd"));
             sql.AppendLine();
             sql.AppendLine("order by DATA_DATE");
-            if (cn.State != System.Data.ConnectionState.Open)
+            if (cn.State != ConnectionState.Open)
                 cn.Open();
             cmdData = cn.CreateCommand();
             cmdData.CommandText = sql.ToString();
@@ -1029,11 +1097,10 @@ namespace PiramidaAnalize
             SqlCommand cmdData;
             double returnValue;
             StringBuilder sql = new StringBuilder();
-            sql.AppendLine("SELECT Value0 FROM DATA WHERE Parnumber=101");
-            sql.AppendFormat("AND Object={0} AND Item={1}", deviceCode, sensorCode);
-            sql.AppendLine();
-            sql.AppendFormat("AND Data_date='{0}'", theDay.ToString("yyyyMMdd"));
-            if (cn.State != System.Data.ConnectionState.Open)
+            sql.Append("SELECT Value0 FROM DATA WHERE Parnumber=101 ");
+            sql.AppendFormat("AND Object={0} AND Item={1} ", deviceCode, sensorCode);
+            sql.AppendFormat("AND Data_date='{0}' ", theDay.ToString("yyyyMMdd"));
+            if (cn.State != ConnectionState.Open)
                 cn.Open();
             cmdData = cn.CreateCommand();
             cmdData.CommandText = sql.ToString();
@@ -1068,11 +1135,11 @@ namespace PiramidaAnalize
             sql.AppendFormat("AND Object={0} AND Item={1}", deviceCode, sensorCode);
             sql.AppendLine();
             sql.AppendLine("ORDER BY Data_date desc");
-            if (cn.State != System.Data.ConnectionState.Open)
+            if (cn.State != ConnectionState.Open)
                 cn.Open();
             cmdData = cn.CreateCommand();
             cmdData.CommandText = sql.ToString();
-            drData = cmdData.ExecuteReader(System.Data.CommandBehavior.SingleRow);
+            drData = cmdData.ExecuteReader(CommandBehavior.SingleRow);
             if (drData.Read())
             {
                 returnValue.TimeStamp = drData.GetDateTime(0);
@@ -1107,11 +1174,11 @@ namespace PiramidaAnalize
             sql.AppendFormat("AND Object={0} AND Item={1} ", deviceCode, sensorCode);
             sql.AppendFormat("AND Data_Date<'{0}' ",priorToThis.ToString("yyyyMMdd"));
             sql.AppendLine("ORDER BY Data_date desc");
-            if (cn.State != System.Data.ConnectionState.Open)
+            if (cn.State != ConnectionState.Open)
                 cn.Open();
             cmdData = cn.CreateCommand();
             cmdData.CommandText = sql.ToString();
-            drData = cmdData.ExecuteReader(System.Data.CommandBehavior.SingleRow);
+            drData = cmdData.ExecuteReader(CommandBehavior.SingleRow);
             if (drData.Read())
             {
                 returnValue.TimeStamp = drData.GetDateTime(0);
@@ -1140,7 +1207,7 @@ namespace PiramidaAnalize
             {
                 cn.Open();
             }
-            catch (System.Data.SqlClient.SqlException ex)
+            catch (SqlException ex)
             {
                 result = false;
             }
@@ -1148,7 +1215,7 @@ namespace PiramidaAnalize
             {
                 result = false;
             }
-            if (cn.State == System.Data.ConnectionState.Open)
+            if (cn.State == ConnectionState.Open)
                 cn.Close();
             return result;
         }
@@ -1172,7 +1239,7 @@ namespace PiramidaAnalize
             {
                 result = false;
             }
-            if (cn.State == System.Data.ConnectionState.Open)
+            if (cn.State == ConnectionState.Open)
                 cn.Close();
             return result;
         }
@@ -1193,24 +1260,20 @@ namespace PiramidaAnalize
         public bool WriteOneData(string writeConnectionString, int parnumber, long deviceCode, long sensorCode,
             DateTime datePoint, double val)
         {
-            // Допилить хранимые процедуры. Похоже в Data_log млишком маленькое поле для username
             bool result = true;
-            System.Globalization.CultureInfo culture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
-            StringBuilder sql = new StringBuilder();
-            sql.Append("execute dbo.AddOneData ");
-            sql.AppendFormat("@parnumber_ = {0},", parnumber);
-            sql.AppendFormat("@object_ = {0},", deviceCode);
-            sql.AppendFormat("@item_ = {0},", sensorCode);
-            sql.AppendFormat("@data_date_ = '{0}',", datePoint.ToString("yyyyMMdd HH:mm"));
-            sql.AppendFormat("@value_ = {0}", val.ToString(culture.NumberFormat));
             SqlConnection cn = new SqlConnection(writeConnectionString);
             SqlCommand cmd;
             SqlTransaction trans;
             try
             {
                 cn.Open();
-                cmd = cn.CreateCommand();
-                cmd.CommandText = sql.ToString();
+                cmd = new SqlCommand("dbo.AddOneData", cn);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@parnumber_", parnumber);
+                cmd.Parameters.AddWithValue("@object_", deviceCode);
+                cmd.Parameters.AddWithValue("@item_", sensorCode);
+                cmd.Parameters.AddWithValue("@data_date_", datePoint);
+                cmd.Parameters.AddWithValue("@value_", val);
                 trans = cn.BeginTransaction();
                 cmd.Transaction = trans;
                 int rows = cmd.ExecuteNonQuery();
@@ -1221,7 +1284,7 @@ namespace PiramidaAnalize
                 MessageBox.Show(ex.Message, "Ошибка функции записи в БД", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 result = false;
             }
-            if (cn.State == System.Data.ConnectionState.Open)
+            if (cn.State == ConnectionState.Open)
                 cn.Close();
             return result;
         }
@@ -1247,21 +1310,18 @@ namespace PiramidaAnalize
             // В проекте приложены скрипты их создания
             #endregion
             bool result = true;
-            System.Globalization.CultureInfo culture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
-            StringBuilder sql = new StringBuilder();
-            sql.Append("execute dbo.DeleteOneData ");
-            sql.AppendFormat("@parnumber = {0},", parnumber);
-            sql.AppendFormat("@object = {0},", deviceCode);
-            sql.AppendFormat("@item = {0},", sensorCode);
-            sql.AppendFormat("@data_date = '{0}'", datePoint.ToString("yyyyMMdd HH:mm"));
             SqlConnection cn = new SqlConnection(writeConnectionString);
             SqlCommand cmd;
             SqlTransaction trans;
             try
             {
                 cn.Open();
-                cmd = cn.CreateCommand();
-                cmd.CommandText = sql.ToString();
+                cmd = new SqlCommand("dbo.DeleteOneData", cn);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@parnumber", parnumber);
+                cmd.Parameters.AddWithValue("@object", deviceCode);
+                cmd.Parameters.AddWithValue("@item", sensorCode);
+                cmd.Parameters.AddWithValue("@data_date", datePoint);
                 trans = cn.BeginTransaction();
                 cmd.Transaction = trans;
                 int rows = cmd.ExecuteNonQuery();
@@ -1272,7 +1332,7 @@ namespace PiramidaAnalize
                 MessageBox.Show(ex.Message, "Ошибка функции удаления из БД", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 result = false;
             }
-            if (cn.State == System.Data.ConnectionState.Open)
+            if (cn.State == ConnectionState.Open)
                 cn.Close();
             return result;
         }
@@ -1474,7 +1534,7 @@ namespace PiramidaAnalize
                         break;
                     }
             }
-            if (cn.State != System.Data.ConnectionState.Open)
+            if (cn.State != ConnectionState.Open)
                 cn.Open();
             cmdData = cn.CreateCommand();
             cmdData.CommandText = sql.ToString();
@@ -1573,7 +1633,7 @@ namespace PiramidaAnalize
                         break;
                     }
             }
-            if (cn.State != System.Data.ConnectionState.Open)
+            if (cn.State != ConnectionState.Open)
                 cn.Open();
             cmdData = cn.CreateCommand();
             cmdData.CommandText = sql.ToString();
@@ -1605,7 +1665,7 @@ namespace PiramidaAnalize
             long result = 0;
             List<long> children = GetChildFolders(folderID);
             children.Add(folderID);
-            if (cn.State != System.Data.ConnectionState.Open)
+            if (cn.State != ConnectionState.Open)
                 cn.Open();
             cmdDevices = cn.CreateCommand();
             foreach (long currentFolder in children)
@@ -1620,6 +1680,360 @@ namespace PiramidaAnalize
                 drDevices.Close();
             }
             cn.Close();
+            return result;
+        }
+
+        /// <summary>
+        /// Возвращает процент сбора по заданному каналу за заданный интервал времени
+        /// </summary>
+        /// <param name="ObjectCode">Код устройства (поле Object в таблице Data)</param>
+        /// <param name="ItemCode">Код канала (поле Item в таблице Data)</param>
+        /// <param name="dateStart">Начало периода</param>
+        /// <param name="dateEnd">Конец периода</param>
+        /// <returns>Процент сбора или -1 при ошибке</returns>
+        public int GetItemPercent12(long ObjectCode, long ItemCode, DateTime dateStart, DateTime dateEnd)
+        {
+            object result;
+            SqlConnection cn = new SqlConnection(connectionString);
+            cn.Open();
+            SqlCommand cmd = cn.CreateCommand();
+            string sql = string.Format("select dbo.GetPercent12({0},{1},{2},{3})",
+                ObjectCode,ItemCode,dateStart,dateEnd);
+            cmd.CommandText = sql;
+            result = cmd.ExecuteNonQuery();
+            cn.Close();
+            if (result == null)
+                return -1;
+            else
+                return (int)result;
+        }
+
+        #endregion
+
+        #region Балансы
+
+        /// <summary>
+        /// Возвращает список существующих в базе балансов, в которых участвует
+        /// хоть один канал заданного устройства
+        /// </summary>
+        /// <param name="deviceID">ID устройства</param>
+        /// <returns>Dataset со списком балансов</returns>
+        public DataSet GetBalanceList(long deviceID)
+        {
+            DataSet result = new DataSet();
+            SqlConnection cn = new SqlConnection(connectionString);
+            StringBuilder sql = new StringBuilder();
+            sql.Append("select ID Номер, Title 'Название баланса', [Check] 'В список', ");
+            sql.Append("'...' Редактировать ");
+            sql.Append("from Balance_main ");
+            sql.Append("where ID in ");
+            sql.Append("(select distinct Balance.No from Balance ");
+            sql.Append("where OBJECT = @device)");
+            cn.Open();
+            SqlCommand cmd = cn.CreateCommand();
+            cmd.CommandText = sql.ToString();
+            cmd.Parameters.AddWithValue("@device", GetCode(deviceID));
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            da.Fill(result);
+            cn.Close();
+            return result;
+        }
+
+        /// <summary>
+        /// Возвращает текущий список отмеченных балансов или всю таблицу Balance_main
+        /// </summary>
+        /// <param name="onlyChecked">Если true, то выбираются только те, балансы, у которых установлен флажок</param>
+        /// <returns>Датасет с одной таблицей Balance_main</returns>
+        public DataSet GetAllBalances(bool onlyChecked)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("select * from balance_main ");
+            if (onlyChecked)
+                sql.Append("where [check]=1 ");
+            sql.Append("order by title");
+            DataSet result = new DataSet();
+            SqlConnection cn = new SqlConnection(connectionString);
+            cn.Open();
+            SqlCommand cmd = cn.CreateCommand();
+            cmd.CommandText = sql.ToString();
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            da.Fill(result);
+            if (cn.State == ConnectionState.Open)
+                cn.Close();
+            return result;
+        }
+
+        /// <summary>
+        /// Возвращает список составляющих баланса в виде Dataset
+        /// </summary>
+        /// <param name="balanceNo">Номер баланса (он же foreign key для связи с Balance_main</param>
+        /// <returns>Список каналов, участвующих в балансе</returns>
+        public DataSet GetBalanceDetails(long balanceNo)
+        {
+            DataSet result = new DataSet();
+            SqlConnection cn = new SqlConnection(connectionString);
+            StringBuilder sql = new StringBuilder();
+            sql.Append("select[SIGN] Знак, DEVICES.NAME Объект, SENSORS.NAME Канал, Parnumber Параметр, ");
+            sql.Append("Devices.Code ObjCode, Sensors.Code SensorCode ");
+            sql.Append("from Balance inner join DEVICES on Balance.Object = DEVICES.CODE ");
+            sql.Append("inner join SENSORS on (Balance.Item = SENSORS.CODE and SENSORS.STATIONID = DEVICES.ID)  ");
+            sql.Append("where Balance.No = @balancenumber");
+            cn.Open();
+            SqlCommand cmd = cn.CreateCommand();
+            cmd.CommandText = sql.ToString();
+            cmd.Parameters.AddWithValue("@balancenumber", balanceNo);
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            da.Fill(result);
+            cn.Close();
+            return result;
+        }
+
+        /// <summary>
+        /// Просто название баланса, т.е. поле Title из таблицы Balance_main
+        /// </summary>
+        /// <param name="balanceNo">Номер баланса (он же поле ID в таблице)</param>
+        /// <returns>Собственно, название баланса</returns>
+        public string GetBalanceName(long balanceNo)
+        {
+            string result;
+            StringBuilder sql = new StringBuilder();
+            sql.Append("select title from balance_main ");
+            sql.AppendFormat("where id={0}", balanceNo);
+            SqlConnection cn = new SqlConnection(connectionString);
+            cn.Open();
+            SqlCommand cmd = cn.CreateCommand();
+            cmd.CommandText = sql.ToString();
+            try
+            {
+                result = cmd.ExecuteScalar().ToString();
+            }
+            catch
+            {
+                throw new Exception("Баланс не найден");
+            }
+            if (cn.State == ConnectionState.Open)
+                cn.Close();
+            return result;
+        }
+
+        /// <summary>
+        /// Переключает значение флажка Check в таблице Balance,
+        /// для чего использует хранимую процедуру
+        /// </summary>
+        /// <param name="balanceNo">Значение поля ID в таблице</param>
+        /// <returns>Новое состояние флажка</returns>
+        public bool ToggleBalanceSelection(long balanceNo)
+        {
+            #region DISCLAIMER! DeleteOneData stored procedure and Data_log table required in the db Piramida2000
+            // ВНИМАНИЕ! Для работы функции нужны:
+            // а) хранимая процедура ToggleBalanceSelected
+            // б) таблица Balance_main
+            // в) таблица Balance
+            // Они не входят в стандартный набор объектов БД Piramida2000
+            // В проекте приложены скрипты их создания
+            #endregion
+            bool result = false;
+            SqlConnection cn = new SqlConnection(connectionString);
+            cn.Open();
+            SqlCommand cmd = cn.CreateCommand();
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = "dbo.ToggleBalanceSelected";
+            cmd.Parameters.AddWithValue("@No", balanceNo);
+            SqlParameter outParam = new SqlParameter("@NewState", result);
+            outParam.Direction = ParameterDirection.Output;
+            cmd.Parameters.Add(outParam);
+            cmd.UpdatedRowSource = UpdateRowSource.OutputParameters;
+            cmd.ExecuteNonQuery();
+            cn.Close();
+            return result;
+        }
+
+        /// <summary>
+        /// Поставить или снять все влажки в поле Check таблицы балансов
+        /// <param name="setState">Поставить или снять флажок</param>
+        /// </summary>
+        public void SelectAllBalances(bool setState)
+        {
+            SqlConnection cn = new SqlConnection(connectionString);
+            cn.Open();
+            SqlCommand cmd = cn.CreateCommand();
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = "SelectAllBalances";
+            cmd.Parameters.AddWithValue("@SetState", (setState) ? "1" : "0");
+            cmd.ExecuteNonQuery();
+            cn.Close();
+        }
+
+        /// <summary>
+        /// Меняем название баланса
+        /// </summary>
+        /// <param name="balanceID">Номер баланса</param>
+        /// <param name="newName">Новое название</param>
+        /// <param name="writerConnectionString">Строка подключения с правами запуска хранимой процедуры</param>
+        public void UpadateName(long balanceID, string newName, string writerConnectionString)
+        {
+            SqlConnection cn = new SqlConnection(writerConnectionString);
+            cn.Open();
+            SqlCommand cmd = cn.CreateCommand();
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = "UpdateBalanceTitle";
+            cmd.Parameters.AddWithValue("@BalanceNo", balanceID);
+            cmd.Parameters.AddWithValue("@NewTitle", newName);
+            cmd.ExecuteNonQuery();
+            cn.Close();
+        }
+
+        /// <summary>
+        /// Сначала удаляет все слагаемые заданного баланса, затем
+        /// заполняет их заново из переданной дататейбл
+        /// </summary>
+        /// <param name="balanceID">Номер баланса</param>
+        /// <param name="newName">Новое название баланса</param>
+        /// <param name="details">Набор строк с данными новых слагаемых баланса</param>
+        /// <param name="writerConnectionString">Строка подключения с правами выполнения хранимых
+        /// процедур</param>
+        /// <returns>True если всё прошло успешно. Если была ошибка, то откатываются все изменения и 
+        /// возвращается false</returns>
+        public bool UpdateBalanceDetails(long balanceID, string newName, DataTable details, string writerConnectionString)
+        {
+            bool result = true;
+            SqlTransaction tran;
+            SqlConnection cn = new SqlConnection(writerConnectionString);
+            cn.Open();
+            tran = cn.BeginTransaction("BalanceUpdate");
+            SqlCommand cmd = cn.CreateCommand();
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = "UpdateBalanceTitle";
+            cmd.Transaction = tran;
+            cmd.Parameters.AddWithValue("@BalanceNo", balanceID);
+            cmd.Parameters.AddWithValue("@NewTitle", newName);
+            try
+            {
+                cmd.ExecuteNonQuery(); // Меняем название балнса
+                cmd.Parameters.Clear();
+                cmd.CommandText = "DeleteBalanceDetails";
+                cmd.Parameters.AddWithValue("@BalanceNo", balanceID);
+                int rowsDeleted = cmd.ExecuteNonQuery(); // Удаляем старые слагаемые
+                cmd.CommandText = "AddBalanceDetail";
+                cmd.Parameters.Clear();
+                SqlParameter param = new SqlParameter("@BalanceNo", balanceID);
+                cmd.Parameters.Add(param);
+                param = new SqlParameter("@Sign", SqlDbType.SmallInt);
+                cmd.Parameters.Add(param);
+                param = new SqlParameter("@Object", SqlDbType.Int);
+                cmd.Parameters.Add(param);
+                param = new SqlParameter("@Item", SqlDbType.Int);
+                cmd.Parameters.Add(param);
+                param = new SqlParameter("@Parnumber", SqlDbType.SmallInt);
+                cmd.Parameters.Add(param);
+                foreach (DataRow row in details.Rows)
+                {
+                    cmd.Parameters["@Sign"].Value = (Int16)row[0];
+                    cmd.Parameters["@Object"].Value = (int)row[1];
+                    cmd.Parameters["@Item"].Value = (int)row[2];
+                    cmd.Parameters["@Parnumber"].Value = (Int16)row[3];
+                    cmd.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                tran.Rollback();
+                if (cn.State == ConnectionState.Open)
+                    cn.Close();
+                return false;
+            }
+            tran.Commit();
+            if (cn.State == ConnectionState.Open)
+                cn.Close();
+            return result;
+        }
+
+        /// <summary>
+        /// Создаёт новый баланс с заглушкой вместо названия
+        /// </summary>
+        /// <param name="writerConnectionString">Строка подключения с правами выполнения хранимой процедуры</param>
+        /// <returns>Значение поля [ID] созданной строки</returns>
+        public long CreateBalance(string writerConnectionString)
+        {
+            long result = -1;
+            SqlConnection cn = new SqlConnection(writerConnectionString);
+            cn.Open();
+            SqlCommand cmd = cn.CreateCommand();
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = "AddBalance";
+            cmd.Parameters.AddWithValue("@Title", "Введите название баланса");
+            SqlParameter param = new SqlParameter("@NewID",SqlDbType.Int);
+            param.Direction = ParameterDirection.Output;
+            cmd.Parameters.Add(param);
+            cmd.UpdatedRowSource = UpdateRowSource.OutputParameters;
+            cmd.ExecuteNonQuery();
+            result = (int)cmd.Parameters["@NewID"].Value;
+            cn.Close();
+            return result;
+        }
+
+        /// <summary>
+        /// Каскадное удаление баланса вместе с его составляющими
+        /// </summary>
+        /// <param name="balanceNo">Номер баланса</param>
+        /// <param name="writerConnectionString">Строка подключения с правами выполнения хранимой процедуры</param>
+        /// <returns></returns>
+        public bool DeleteBalance(long balanceNo,string writerConnectionString)
+        {
+            bool result = true;
+            int rowsDeleted;
+            SqlConnection cn = new SqlConnection(writerConnectionString);
+            cn.Open();
+            SqlCommand cmd = cn.CreateCommand();
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.CommandText = "DeleteBalance";
+            cmd.Parameters.AddWithValue("@BalanceNo", balanceNo);
+            try
+            {
+                rowsDeleted = cmd.ExecuteNonQuery();
+                Console.WriteLine("Delete balance: {0} row(s)", rowsDeleted);
+            }
+            catch
+            {
+                result = false;
+            }
+            finally
+            {
+                cn.Close();
+            }
+            return result;
+        }
+
+        #endregion
+
+        #region Поиски
+
+        /// <summary>
+        /// Ищет устройство по коду и возвращает имя
+        /// </summary>
+        /// <param name="deviceCode"></param>
+        /// <returns>Название устройства</returns>
+        public string FindByCode(long deviceCode)
+        {
+            string result;
+            StringBuilder sql = new StringBuilder();
+            sql.Append("select devices.name devname ");
+            sql.Append("from devices ");
+            sql.AppendFormat("where devices.code={0}", deviceCode);
+            SqlConnection cn = new SqlConnection(connectionString);
+            cn.Open();
+            SqlCommand cmd = cn.CreateCommand();
+            cmd.CommandText = sql.ToString();
+            try
+            {
+                result = cmd.ExecuteScalar().ToString();
+            }
+            catch
+            {
+                result = "Не найдено";
+            }
+            if (cn.State == ConnectionState.Open)
+                cn.Close();
             return result;
         }
 
@@ -1640,7 +2054,7 @@ namespace PiramidaAnalize
             List<long> result = new List<long>();
             long currentResult;
             string sql = string.Format("SELECT ID FROM Folders WHERE ParentID={0}", folderID);
-            if (cn.State != System.Data.ConnectionState.Open)
+            if (cn.State != ConnectionState.Open)
                 cn.Open();
             cmdFolders = cn.CreateCommand(); 
             cmdFolders.CommandText = sql;

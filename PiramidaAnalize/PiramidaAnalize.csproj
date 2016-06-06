@@ -73,11 +73,35 @@
     <Compile Include="frmAnalize.Designer.cs">
       <DependentUpon>frmAnalize.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmBalance.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmBalance.Designer.cs">
+      <DependentUpon>frmBalance.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmBalanceList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmBalanceList.Designer.cs">
+      <DependentUpon>frmBalanceList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmFind.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmFind.Designer.cs">
+      <DependentUpon>frmFind.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmImport.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="frmImport.Designer.cs">
       <DependentUpon>frmImport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="frmManageBalance.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmManageBalance.Designer.cs">
+      <DependentUpon>frmManageBalance.cs</DependentUpon>
     </Compile>
     <Compile Include="frmManual.cs">
       <SubType>Form</SubType>
@@ -157,8 +181,20 @@
     <EmbeddedResource Include="frmAnalize.resx">
       <DependentUpon>frmAnalize.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="frmBalance.resx">
+      <DependentUpon>frmBalance.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmBalanceList.resx">
+      <DependentUpon>frmBalanceList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmFind.resx">
+      <DependentUpon>frmFind.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="frmImport.resx">
       <DependentUpon>frmImport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmManageBalance.resx">
+      <DependentUpon>frmManageBalance.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frmManual.resx">
       <DependentUpon>frmManual.cs</DependentUpon>
@@ -199,7 +235,18 @@
     <Content Include="32.32.32.P2kClient.exe.00001.ico" />
     <Content Include="PiramidaAnalize.cd" />
     <Content Include="Resources\16.16.04.shell32.dll.00031.ico" />
+    <None Include="Resources\32.32.32.P2kClient.exe.00001.png" />
+    <None Include="Resources\AddNew.png" />
+    <Content Include="Scripts\UPDATEBALANCETITLE.sql" />
+    <None Include="Resources\Save.jpg" />
+    <Content Include="Scripts\ADDBALANCE.sql" />
+    <Content Include="Scripts\ADDBALANCEDETAIL.sql" />
+    <Content Include="Scripts\DELETEBALANCEDETAILS.sql" />
+    <Content Include="Scripts\TOGGLEBALANCESELECTION.sql" />
+    <None Include="Resources\Find.jpg" />
     <Content Include="Scripts\ADDONEDATA.sql" />
+    <Content Include="Scripts\BALANCE_CREATE.sql" />
+    <Content Include="Scripts\BALANCE_MAIN_CREATE.sql" />
     <Content Include="Scripts\DATA_LOG_CREATE.sql" />
     <Content Include="Scripts\DELETEONEDATA.sql" />
     <None Include="Resources\refresh.jpg" />

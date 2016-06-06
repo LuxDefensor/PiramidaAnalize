@@ -48,6 +48,14 @@ namespace PiramidaAnalize
             return result;
         }
 
+        public object[] GetNumberColumn(int rowCount)
+        {
+            object[] result = new object[rowCount];
+            for (int i = 0; i < rowCount; i++)
+                result[i] = i + 1;
+            return result;
+        }
+
         public static string GetColumnHeader(int columnIndex)
         {
             string result = "";
@@ -109,11 +117,11 @@ namespace PiramidaAnalize
             {
                 if (disposing)
                 {
-                    // TODO: dispose managed state (managed objects).
+                    // _TODO: dispose managed state (managed objects).
                 }
 
-                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-                // TODO: set large fields to null.
+                // _TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
+                // _TODO: set large fields to null.
                 releaseObject(firstCell);
                 releaseObject(ws);
                 releaseObject(wb);
@@ -122,7 +130,7 @@ namespace PiramidaAnalize
             }
         }
 
-        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
+        // _TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
         ~XLSImport()
         {
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
@@ -134,7 +142,7 @@ namespace PiramidaAnalize
         {
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose(true);
-            // TODO: uncomment the following line if the finalizer is overridden above.
+            // _TODO: uncomment the following line if the finalizer is overridden above.
             GC.SuppressFinalize(this);
         }
         #endregion

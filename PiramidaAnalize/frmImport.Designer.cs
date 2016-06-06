@@ -41,12 +41,12 @@
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolOpen = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.lblDevice = new System.Windows.Forms.ToolStripLabel();
+            this.lblParameter = new System.Windows.Forms.ToolStripLabel();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.lblDevice = new System.Windows.Forms.ToolStripLabel();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.lblDate = new System.Windows.Forms.ToolStripLabel();
             this.dlgOpen = new System.Windows.Forms.OpenFileDialog();
-            this.lblParameter = new System.Windows.Forms.ToolStripLabel();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -145,6 +145,7 @@
             this.dgvSheet.Location = new System.Drawing.Point(258, 3);
             this.dgvSheet.Name = "dgvSheet";
             this.dgvSheet.ReadOnly = true;
+            this.dgvSheet.RowHeadersVisible = false;
             this.tableLayoutPanel1.SetRowSpan(this.dgvSheet, 2);
             this.dgvSheet.Size = new System.Drawing.Size(610, 426);
             this.dgvSheet.TabIndex = 3;
@@ -185,7 +186,7 @@
             this.lblDate});
             this.toolStrip1.Location = new System.Drawing.Point(3, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(384, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(353, 25);
             this.toolStrip1.TabIndex = 0;
             // 
             // toolOpen
@@ -201,16 +202,27 @@
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
             // 
+            // lblParameter
+            // 
+            this.lblParameter.Name = "lblParameter";
+            this.lblParameter.Size = new System.Drawing.Size(86, 22);
+            this.lblParameter.Text = "toolStripLabel1";
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            // 
             // lblDevice
             // 
             this.lblDevice.Name = "lblDevice";
             this.lblDevice.Size = new System.Drawing.Size(86, 22);
             this.lblDevice.Text = "toolStripLabel1";
             // 
-            // toolStripSeparator2
+            // toolStripSeparator3
             // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
             // 
             // lblDate
             // 
@@ -222,17 +234,6 @@
             // 
             this.dlgOpen.Filter = "Файлы Excel|*.xls;*.xlsx";
             this.dlgOpen.Title = "Выберите файл с данными";
-            // 
-            // lblParameter
-            // 
-            this.lblParameter.Name = "lblParameter";
-            this.lblParameter.Size = new System.Drawing.Size(86, 22);
-            this.lblParameter.Text = "toolStripLabel1";
-            // 
-            // toolStripSeparator3
-            // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
             // 
             // frmImport
             // 

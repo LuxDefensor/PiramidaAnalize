@@ -237,6 +237,7 @@
             // 
             // tipExcel
             // 
+            this.tipExcel.IsBalloon = true;
             this.tipExcel.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
             this.tipExcel.ToolTipTitle = "Импорт данных из Excel";
             // 

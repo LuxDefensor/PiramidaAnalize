@@ -35,9 +35,9 @@ namespace PiramidaAnalize
 			d=new DataProvider();
             dsPlots = new DataSet();
             DataTable tb = new System.Data.DataTable("Plots");
-            tb.Columns.Add(new System.Data.DataColumn("selected", true.GetType()));
-            tb.Columns.Add(new System.Data.DataColumn("plots","".GetType()));
-            tb.Columns.Add(new System.Data.DataColumn("colors","".GetType()));
+            tb.Columns.Add(new System.Data.DataColumn("selected", typeof(bool)));
+            tb.Columns.Add(new System.Data.DataColumn("plots", typeof(string)));
+            tb.Columns.Add(new System.Data.DataColumn("colors", typeof(string)));
             dsPlots.Tables.Add(tb);
 
             #region Define colors
@@ -147,7 +147,7 @@ namespace PiramidaAnalize
             foreach (Series s in chart1.Series)
             {
                 DataRow r = dsPlots.Tables["Plots"].NewRow();
-                r[0] = true;
+                r[0] = (s.ChartArea == "ChartArea1");
                 r[1] = s.Name;
                 dsPlots.Tables["Plots"].Rows.Add(r);
                 dgvLegend.Rows[dgvLegend.Rows.Count - 1].Cells[2].Style.BackColor = s.Color;

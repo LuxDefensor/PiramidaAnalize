@@ -247,5 +247,27 @@ namespace PiramidaAnalize
             frmSettings f = new frmSettings();
             f.ShowDialog();
         }
+
+        private void mnuBalance_Click(object sender, EventArgs e)
+        {
+            string windowTitle = "Балансы электроэнергии";
+            bool contains = false;
+            foreach (Form child in this.MdiChildren)
+                if (child.Text == windowTitle)
+                {
+                    child.Activate();
+                    contains = true;
+                    break;
+                }
+            if (!contains)
+            {
+                frmBalance f = new frmBalance();
+                this.Cursor = Cursors.WaitCursor;
+                f.MdiParent = this;
+                f.Text = windowTitle;
+                f.Show();
+                f.WindowState = FormWindowState.Maximized;
+            }
+        }
     }
 }

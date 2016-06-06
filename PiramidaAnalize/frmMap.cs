@@ -281,7 +281,12 @@ namespace PiramidaAnalize
             foreach (Folder f in folders)
             {
                 dgvMap.Rows[currentRow].Cells[0].Value = f.FolderID;
-                dgvMap.Rows[currentRow].Cells[1].Value = f.FolderName;
+                if (f.FolderName.Length > 25)
+                    dgvMap.Rows[currentRow].Cells[1].Value = string.Format("{0}...{1}",
+                       f.FolderName.Substring(0, 8), f.FolderName.Substring(f.FolderName.Length - 10));
+                else
+                    dgvMap.Rows[currentRow].Cells[1].Value = f.FolderName;
+                dgvMap.Rows[currentRow].Cells[1].ToolTipText = f.FolderName;
                 dgvMap.Rows[currentRow].Cells[0].Style.BackColor = Color.Cornsilk;
                 dgvMap.Rows[currentRow].Cells[1].Style.BackColor = Color.Cornsilk;
                 currentDate = baseDate;
@@ -302,7 +307,12 @@ namespace PiramidaAnalize
             foreach (Device dev in devices)
             {
                 dgvMap.Rows[currentRow].Cells[0].Value = dev.DeviceCode;
-                dgvMap.Rows[currentRow].Cells[1].Value = dev.DeviceName;
+                if (dev.DeviceName.Length > 25)
+                    dgvMap.Rows[currentRow].Cells[1].Value = string.Format("{0}...{1}",
+                        dev.DeviceName.Substring(0, 8), dev.DeviceName.Substring(dev.DeviceName.Length - 10));
+                else
+                    dgvMap.Rows[currentRow].Cells[1].Value = dev.DeviceName;
+                dgvMap.Rows[currentRow].Cells[1].ToolTipText = dev.DeviceName;
                 currentDate = baseDate;
                 expected = d.ExpectedInDevice(dev.DeviceID, interval, daysCount, parameter);
                 for (int i = 2; i < dgvMap.ColumnCount; i++)
@@ -367,7 +377,12 @@ namespace PiramidaAnalize
             foreach (Sensor s in sensors)
             {
                 dgvMap.Rows[currentRow].Cells[0].Value = s.SensorCode;
-                dgvMap.Rows[currentRow].Cells[1].Value = s.SensorName;
+                if (s.SensorName.Length > 25)
+                    dgvMap.Rows[currentRow].Cells[1].Value = string.Format("{0}...{1}",
+                        s.SensorName.Substring(0, 8), s.SensorName.Substring(s.SensorName.Length - 10));
+                else
+                    dgvMap.Rows[currentRow].Cells[1].Value = s.SensorName;
+                dgvMap.Rows[currentRow].Cells[1].ToolTipText = s.SensorName;
                 currentDate = baseDate;
                 expected = d.ExpectedInSensor(s.SensorID, interval, daysCount, parameter);
                 for (int i = 2; i < dgvMap.ColumnCount; i++)

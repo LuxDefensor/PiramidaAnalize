@@ -310,5 +310,49 @@ namespace PiramidaAnalize
                 MessageBox.Show(ex.Message, "After checked event handler");
             }
         }
+
+        private void cmdFind_Click(object sender, EventArgs e)
+        {
+            long deviceID;
+            TreeNode deviceNode;
+            frmFind f = new frmFind();
+            f.ShowDialog();
+            if (f.DialogResult == DialogResult.OK)
+            {
+                deviceID = f.DeviceID;
+                deviceNode = FindNode("D" + deviceID.ToString());
+                mainTree.SelectedNode = deviceNode;
+                deviceNode.EnsureVisible();
+            }
+        }
+
+        private TreeNode FindNode(string key)
+        {
+            TreeNode result;
+            result = mainTree.Nodes[key];
+            if (result == null)
+                foreach (TreeNode subNode in mainTree.Nodes)
+                {
+                    result = RecursiveSearch(subNode, key);
+                    if (result != null)
+                        break;
+                }
+            return result;
+        }
+
+        private TreeNode RecursiveSearch(TreeNode root, string key)
+        {
+            TreeNode result = root.Nodes[key];
+            if (result == null)
+            {
+                foreach (TreeNode currentNode in root.Nodes)
+                {
+                    result = RecursiveSearch(currentNode, key);
+                    if (result != null)
+                        break;
+                }
+            }
+            return result;
+        }
     }
 }

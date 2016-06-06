@@ -58,17 +58,24 @@ namespace PiramidaAnalize
                 this.Cursor = Cursors.WaitCursor;
                 source = new XLSImport(dlgOpen.FileName);
                 dgvSheet.RowCount = (parameter == 12) ? 48 : 1;
-                dgvSheet.ColumnCount = sensors.Count;
+                dgvSheet.ColumnCount = sensors.Count + 1;
                 foreach (DataGridViewColumn col in dgvSheet.Columns)
                 {
-                    col.HeaderText = XLSImport.GetColumnHeader(col.Index + 1);
                     col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                    values = source.GetColumn(col.Index + 1, dgvSheet.RowCount);
-                    for (int i = 0; i < dgvSheet.RowCount; i++)
+                    if (col.Index == 0)
                     {
-                        dgvSheet[col.Index, i].Value = values[i];
+                        values = source.GetNumberColumn(dgvSheet.RowCount);
+                        col.DefaultCellStyle.BackColor = SystemColors.Control;
                     }
+                    else
+                    {
+                        col.HeaderText = XLSImport.GetColumnHeader(col.Index + 1);
+                        values = source.GetColumn(col.Index, dgvSheet.RowCount);
+                    }
+                    for (int i = 0; i < dgvSheet.RowCount; i++)
+                        dgvSheet[col.Index, i].Value = values[i];
                 }
+                dgvSheet.Columns[0].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 source.Close();
                 this.Cursor = Cursors.Default;
             }

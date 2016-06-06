@@ -115,10 +115,10 @@ namespace PiramidaAnalize
             // 
             // mnuBalance
             // 
-            this.mnuBalance.Enabled = false;
             this.mnuBalance.Name = "mnuBalance";
             this.mnuBalance.Size = new System.Drawing.Size(186, 22);
             this.mnuBalance.Text = "&Балансы";
+            this.mnuBalance.Click += new System.EventHandler(this.mnuBalance_Click);
             // 
             // mnuMap
             // 

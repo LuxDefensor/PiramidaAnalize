@@ -16,6 +16,7 @@ namespace PiramidaAnalize
     {
         private DataProvider d;
         private MainForm parent;
+        private DateTime currentDate;
         private bool dataChanged;
         private long currentDevice = -1;
 
@@ -28,6 +29,39 @@ namespace PiramidaAnalize
             dgvData.CellEndEdit += DgvData_CellEndEdit;
             mainTree.BeforeSelect += MainTree_BeforeSelect;
             mainTree.AfterSelect += MainTree_AfterSelect;
+            dgvData.KeyDown += DgvData_KeyDown;
+            cal1.DateChanged += Cal1_DateChanged;
+        }
+
+        private void Cal1_DateChanged(object sender, DateRangeEventArgs e)
+        {
+            System.Text.StringBuilder message = new StringBuilder();
+            if (dataChanged)
+            {
+                message.AppendLine("В таблице есть несохранённые изменения.");
+                message.AppendFormat("Обратите внимание, что они были сделаны для {0}.", currentDate.ToShortDateString());
+                message.AppendLine();
+                message.Append("Вы уверены, что хотите выбрать другую дату?");
+                if (MessageBox.Show(message.ToString(), "Изменение даты",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.No)
+                {
+                    cal1.SelectionStart = currentDate;
+                    cal1.SelectionEnd = cal1.SelectionStart;
+                    return;
+                }
+            }
+            currentDate = e.Start;
+            txtDate.Text = currentDate.ToLongDateString();
+        }
+
+        private void DgvData_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (!dgvData.IsCurrentCellInEditMode && e.KeyCode == Keys.Delete)
+            {
+                dgvData.CurrentCell.Value = null;
+                dgvData.CurrentCell.Tag = "Clear";
+                e.Handled = true;
+            }
         }
 
         private void MainTree_AfterSelect(object sender, TreeViewEventArgs e)
@@ -98,15 +132,17 @@ namespace PiramidaAnalize
                 {
                     for (int i = 3; i < dgvData.ColumnCount; i++)
                     {
-                        if (dgvData[i, e.RowIndex].Tag == null
-                         || dgvData[i, e.RowIndex].Tag.ToString() == "Update")
-                            newConsumption += double.Parse(dgvData[i, e.RowIndex].Value.ToString(), culture.NumberFormat);
+                        if (dgvData[i, e.RowIndex].Value != null)
+                            if (dgvData[i, e.RowIndex].Tag == null
+                             || dgvData[i, e.RowIndex].Tag.ToString() == "Update")
+                                newConsumption += double.Parse(dgvData[i, e.RowIndex].Value.ToString(), culture.NumberFormat);
                     }
                     dgvData[2, e.RowIndex].Style.Font = new Font(dgvData.DefaultCellStyle.Font, FontStyle.Bold);
                     dgvData[2, e.RowIndex].Value = newConsumption / 2;
                 }
             }
-            dataChanged = true;            
+
+            dataChanged = true;
         }
 
         private void FrmManual_Load(object sender, EventArgs e)
@@ -115,6 +151,7 @@ namespace PiramidaAnalize
             this.Refresh();
             parent = (MainForm)this.MdiParent;
             d.PopulateDevices(mainTree);
+            currentDate = cal1.SelectionStart;
             parent.Cursor = Cursors.Default;
         }
 
@@ -264,6 +301,8 @@ namespace PiramidaAnalize
                 }
             }
             dgvData.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
+            currentDate = cal1.SelectionStart;
+            txtDate.Text = currentDate.ToLongDateString();
             this.Cursor = Cursors.Default;
         }
 
@@ -271,56 +310,65 @@ namespace PiramidaAnalize
         {
             DateTime currentDate = dateSave;
             long deviceCode = d.GetCode(deviceID);
-            foreach (DataGridViewRow row in dgvData.Rows)
+            try
             {
-                if (parameter == 12)
+                foreach (DataGridViewRow row in dgvData.Rows)
                 {
-                    for (int i = 3; i < dgvData.ColumnCount; i++)
+                    if (parameter == 12)
                     {
-                        currentDate = dateSave.AddMinutes(30 * (i - 2));
-                        if (dgvData[i, row.Index].Tag != null)
+                        for (int i = 3; i < dgvData.ColumnCount; i++)
                         {
-                            if (dgvData[i, row.Index].Tag.ToString() == "Update")
+                            currentDate = dateSave.AddMinutes(30 * (i - 2));
+                            if (dgvData[i, row.Index].Tag != null)
                             {
-                                d.WriteOneData(parent.WriterConnectionString, 12, deviceCode,
-                                    long.Parse(dgvData[0, row.Index].Value.ToString()), currentDate,
-                                    double.Parse(dgvData[i, row.Index].Value.ToString()));
-                                dgvData[i, row.Index].Tag = null;
-                                dgvData[i, row.Index].Style.Font = new Font(dgvData.DefaultCellStyle.Font, FontStyle.Regular);
-                            }
-                            else if (dgvData[i, row.Index].Tag.ToString() == "Clear")
-                            {
-                                d.ClearOneData(parent.WriterConnectionString, 12, deviceCode,
-                                    long.Parse(dgvData[0, row.Index].Value.ToString()), currentDate);
-                                dgvData[i, row.Index].Tag = null;
-                                dgvData[i, row.Index].Style.Font = new Font(dgvData.DefaultCellStyle.Font, FontStyle.Regular);
+                                if (dgvData[i, row.Index].Tag.ToString() == "Update")
+                                {
+                                    d.WriteOneData(parent.WriterConnectionString, 12, deviceCode,
+                                        long.Parse(dgvData[0, row.Index].Value.ToString()), currentDate,
+                                        double.Parse(dgvData[i, row.Index].Value.ToString()));
+                                    dgvData[i, row.Index].Tag = null;
+                                    dgvData[i, row.Index].Style.Font = new Font(dgvData.DefaultCellStyle.Font, FontStyle.Regular);
+                                }
+                                else if (dgvData[i, row.Index].Tag.ToString() == "Clear")
+                                {
+                                    d.ClearOneData(parent.WriterConnectionString, 12, deviceCode,
+                                        long.Parse(dgvData[0, row.Index].Value.ToString()), currentDate);
+                                    dgvData[i, row.Index].Tag = null;
+                                    dgvData[i, row.Index].Style.Font = new Font(dgvData.DefaultCellStyle.Font, FontStyle.Regular);
+                                }
                             }
                         }
+                        dgvData[2, row.Index].Style.Font = new Font(dgvData.DefaultCellStyle.Font, FontStyle.Regular);
                     }
-                    dgvData[2, row.Index].Style.Font = new Font(dgvData.DefaultCellStyle.Font, FontStyle.Regular);
-                }
-                else
-                {
-                    if (dgvData[6, row.Index].Tag != null)
+                    else
                     {
-                        if (dgvData[6, row.Index].Tag.ToString() == "Update")
+                        if (dgvData[6, row.Index].Tag != null)
                         {
-                            d.WriteOneData(parent.WriterConnectionString, 101, deviceCode,
-                                long.Parse(dgvData[0, row.Index].Value.ToString()), dateSave,
-                                long.Parse(dgvData[6, row.Index].Value.ToString()));
-                            dgvData[6, row.Index].Tag = null;
-                            dgvData[6, row.Index].Style.Font = new Font(dgvData.DefaultCellStyle.Font, FontStyle.Regular);
-                        }
-                        else if (dgvData[6, row.Index].Tag.ToString() == "Clear")
-                        {
-                            d.ClearOneData(parent.WriterConnectionString, 101, deviceCode,
-                                long.Parse(dgvData[0, row.Index].Value.ToString()), dateSave);
-                            dgvData[6, row.Index].Tag = null;
-                            dgvData[6, row.Index].Style.Font = new Font(dgvData.DefaultCellStyle.Font, FontStyle.Regular);
+                            if (dgvData[6, row.Index].Tag.ToString() == "Update")
+                            {
+                                d.WriteOneData(parent.WriterConnectionString, 101, deviceCode,
+                                    long.Parse(dgvData[0, row.Index].Value.ToString()), dateSave,
+                                    long.Parse(dgvData[6, row.Index].Value.ToString()));
+                                dgvData[6, row.Index].Tag = null;
+                                dgvData[6, row.Index].Style.Font = new Font(dgvData.DefaultCellStyle.Font, FontStyle.Regular);
+                            }
+                            else if (dgvData[6, row.Index].Tag.ToString() == "Clear")
+                            {
+                                d.ClearOneData(parent.WriterConnectionString, 101, deviceCode,
+                                    long.Parse(dgvData[0, row.Index].Value.ToString()), dateSave);
+                                dgvData[6, row.Index].Tag = null;
+                                dgvData[6, row.Index].Style.Font = new Font(dgvData.DefaultCellStyle.Font, FontStyle.Regular);
+                            }
                         }
                     }
                 }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            MessageBox.Show("Данные успешно занесены в базу", "Запись завершена",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void MakeEmptyTable(long deviceID, int parameter)
@@ -471,7 +519,6 @@ namespace PiramidaAnalize
                     return;
                 }
             }
-            txtDate.Text = cal1.SelectionStart.ToLongDateString();
             if (currentDevice > 0)
                 LoadTable(currentDevice, (opt12.Checked) ? 12 : 101);
             dataChanged = false;
@@ -479,7 +526,6 @@ namespace PiramidaAnalize
 
         private void cmdSave_Click(object sender, EventArgs e)
         {
-            DateTime dt;
             if (dataChanged)
             {
                 if (MessageBox.Show("Эта операция запишет введённые вами данные в базу данных\n" +
@@ -490,9 +536,8 @@ namespace PiramidaAnalize
                     return;
                 }
             }
-            dt = cal1.SelectionStart;
             if (currentDevice > 0)
-                SaveTable(currentDevice, (opt12.Checked) ? 12 : 101, dt);
+                SaveTable(currentDevice, (opt12.Checked) ? 12 : 101, currentDate);
             dataChanged = false;
         }
 
@@ -513,6 +558,7 @@ namespace PiramidaAnalize
             }
             if (currentDevice > 0)
             {
+                DataGridViewCell c;
                 frmImport frm = new frmImport(currentDevice, txtSelected.Text,
                     (this.opt12.Checked) ? 12 : 101,
                     cal1.SelectionStart);
@@ -522,16 +568,18 @@ namespace PiramidaAnalize
                     DataGridView dgvExcel = frm.Sheet;
                     foreach (DataGridViewRow row in dgvExcel.Rows)
                     {
-                        foreach (DataGridViewCell c in row.Cells)
+                        for (int i = 1; i < row.Cells.Count; i++) // Превый столбец пропускаем, там № п/п
                         {
+                            c = row.Cells[i];
                             if (this.opt12.Checked)
                             {
+                                #region Для получасовок
                                 if (c.Value == null)
                                 {
-                                    dgvData[row.Index + 3, c.ColumnIndex].Tag = "Empty";
-                                    dgvData[row.Index + 3, c.ColumnIndex].ToolTipText = "";
-                                    dgvData[row.Index + 3, c.ColumnIndex].Style.BackColor = SystemColors.Window;
-                                    dgvData[row.Index + 3, c.ColumnIndex].Style.Font =
+                                    dgvData[row.Index + 3, i - 1].Tag = "Empty";
+                                    dgvData[row.Index + 3, i - 1].ToolTipText = "";
+                                    dgvData[row.Index + 3, i - 1].Style.BackColor = SystemColors.Window;
+                                    dgvData[row.Index + 3, i - 1].Style.Font =
                                         new Font(dgvData.DefaultCellStyle.Font, FontStyle.Regular);
                                 }
                                 else
@@ -543,29 +591,33 @@ namespace PiramidaAnalize
                                     if (double.TryParse(currentValue, System.Globalization.NumberStyles.Float,
                                         culture.NumberFormat, out currentValueDouble))
                                     {
-                                        dgvData[row.Index + 3, c.ColumnIndex].Value = currentValueDouble;
-                                        dgvData[row.Index + 3, c.ColumnIndex].Style.BackColor = SystemColors.Window;
-                                        dgvData[row.Index + 3, c.ColumnIndex].ToolTipText = "";
-                                        dgvData[row.Index + 3, c.ColumnIndex].Tag = "Update";
+                                        dgvData[row.Index + 3, i - 1].Value = currentValueDouble;
+                                        dgvData[row.Index + 3, i - 1].Style.BackColor = SystemColors.Window;
+                                        dgvData[row.Index + 3, i - 1].Style.Font =
+                                            new Font(dgvData.DefaultCellStyle.Font, FontStyle.Bold);
+                                        dgvData[row.Index + 3, i - 1].ToolTipText = "";
+                                        dgvData[row.Index + 3, i - 1].Tag = "Update";
                                         consumption += currentValueDouble;
                                     }
                                     else
                                     {
-                                        dgvData[row.Index + 3, c.ColumnIndex].Style.BackColor = Color.Red;
-                                        dgvData[row.Index + 3, c.ColumnIndex].ToolTipText =
+                                        dgvData[row.Index + 3, i - 1].Style.BackColor = Color.Red;
+                                        dgvData[row.Index + 3, i - 1].ToolTipText =
                                             "Программа не воспринимает данное значение как число";
-                                        dgvData[row.Index + 3, c.ColumnIndex].Tag = "Ignore";
+                                        dgvData[row.Index + 3, i - 1].Tag = "Ignore";
                                     }
                                 }
+                                #endregion
                             }
                             else
                             {
+                                #region Для зафиксированных показаний
                                 if (c.Value == null)
                                 {
-                                    dgvData[6, c.ColumnIndex].ToolTipText = "";
-                                    dgvData[6, c.ColumnIndex].Tag = "Empty";
-                                    dgvData[6, c.ColumnIndex].Style.BackColor = SystemColors.Window;
-                                    dgvData[6, c.ColumnIndex].Style.Font =
+                                    dgvData[6, i - 1].ToolTipText = "";
+                                    dgvData[6, i - 1].Tag = "Empty";
+                                    dgvData[6, i - 1].Style.BackColor = SystemColors.Window;
+                                    dgvData[6, i - 1].Style.Font =
                                         new Font(dgvData.DefaultCellStyle.Font, FontStyle.Regular);
                                 }
                                 else
@@ -577,19 +629,20 @@ namespace PiramidaAnalize
                                     if (double.TryParse(currentValue, System.Globalization.NumberStyles.Float,
                                         culture.NumberFormat, out currentValueDouble))
                                     {
-                                        dgvData[6, c.ColumnIndex].Value = currentValueDouble;
-                                        dgvData[6, c.ColumnIndex].Style.BackColor = SystemColors.Window;
-                                        dgvData[6, c.ColumnIndex].ToolTipText = "";
-                                        dgvData[6, c.ColumnIndex].Tag = "Update";
+                                        dgvData[6, i - 1].Value = currentValueDouble;
+                                        dgvData[6, i - 1].Style.BackColor = SystemColors.Window;
+                                        dgvData[6, i - 1].ToolTipText = "";
+                                        dgvData[6, i - 1].Tag = "Update";
                                     }
                                     else
                                     {
-                                        dgvData[6, c.ColumnIndex].Style.BackColor = Color.Red;
-                                        dgvData[6, c.ColumnIndex].ToolTipText =
+                                        dgvData[6, i - 1].Style.BackColor = Color.Red;
+                                        dgvData[6, i - 1].ToolTipText =
                                             "Программа не воспринимает данное значение как число";
-                                        dgvData[6, c.ColumnIndex].Tag = "Ignore";
+                                        dgvData[6, i - 1].Tag = "Ignore";
                                     }
                                 }
+                                #endregion
                             }
                         }
                     }
@@ -598,9 +651,11 @@ namespace PiramidaAnalize
                         foreach (DataGridViewRow row in dgvData.Rows)
                         {
                             consumption = 0;
-                            foreach (DataGridViewCell c in row.Cells)
-                                if (c.Tag != null && c.Tag.ToString() == "Update")
-                                    consumption += double.Parse(c.Value.ToString());
+                            foreach (DataGridViewCell cell in row.Cells)
+                                if (cell.Value != null &&
+                                    cell.Tag != null &&
+                                    cell.Tag.ToString() == "Update")
+                                    consumption += double.Parse(cell.Value.ToString());
                             row.Cells[2].Style.Font = new
                                 Font(dgvData.DefaultCellStyle.Font, FontStyle.Bold);
                             row.Cells[2].Value = consumption / 2;
@@ -610,7 +665,8 @@ namespace PiramidaAnalize
                     dgvExcel.Rows.Clear();
                 }
             }
-            dataChanged = false;
+            txtDate.Text = currentDate.ToLongDateString();
+            dataChanged = true;
         }
     }
 }
