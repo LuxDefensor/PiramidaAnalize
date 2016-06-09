@@ -21,11 +21,7 @@ namespace PiramidaAnalize
 
         private void FrmTest_Click(object sender, EventArgs e)
         {
-            this.listBox1.Items.Clear();
-            for (int i = 1; i < 256; i++)
-            {
-                this.listBox1.Items.Add(string.Format("{0:0000} - {1:??}", i, XLSImport.GetColumnHeader(i)));
-            }
+
         }
 
         private void FrmTest_Load(object sender, EventArgs e)

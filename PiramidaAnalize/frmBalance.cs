@@ -27,6 +27,13 @@ namespace PiramidaAnalize
             this.ResizeEnd += FrmBalance_ResizeEnd;
             toolExcel.Click += ToolExcel_Click;
             dgvBalance.SelectionChanged += DgvBalance_SelectionChanged;
+            this.Activated += FrmBalance_Activated;
+        }
+
+        private void FrmBalance_Activated(object sender, EventArgs e)
+        {
+            TreeObjects_AfterSelect(treeObjects,
+                new TreeViewEventArgs(treeObjects.SelectedNode, TreeViewAction.Unknown));
         }
 
         private void DgvBalance_SelectionChanged(object sender, EventArgs e)
@@ -57,7 +64,14 @@ namespace PiramidaAnalize
             dgvPlus.Rows.Clear();
             long balanceNo = long.Parse(dgvBalance[0, e.RowIndex].Value.ToString());
             details = d.GetBalanceDetails(balanceNo);
-            if (e.ColumnIndex == 3)
+            foreach (DataRow row in details.Tables[0].Rows)
+            {
+                if (row.Field<Int16>(0) == -1)
+                    dgvMinus.Rows.Add(row[1], row[2], row[3]);
+                else
+                    dgvPlus.Rows.Add(row[1], row[2], row[3]);
+            }
+            if (e.ColumnIndex == 2)
             {
                 parent.Cursor = Cursors.WaitCursor;
                 frmManageBalance frm = new frmManageBalance((int)dgvBalance[0, e.RowIndex].Value);
@@ -65,14 +79,6 @@ namespace PiramidaAnalize
                 frm.WindowState = FormWindowState.Maximized;
                 frm.Show();
             }
-            else
-                foreach (DataRow row in details.Tables[0].Rows)
-                {
-                    if (row.Field<Int16>(0) == -1)
-                        dgvMinus.Rows.Add(row[1], row[2], row[3]);
-                    else
-                        dgvPlus.Rows.Add(row[1], row[2], row[3]);
-                }
         }
 
         private void TreeObjects_AfterSelect(object sender, TreeViewEventArgs e)
@@ -90,16 +96,14 @@ namespace PiramidaAnalize
                     dgvBalance.DataSource = rowSource;
                     dgvBalance.DataMember = rowSource.Tables[0].TableName;
                     dgvBalance.Columns[2].Width = 100;
-                    dgvBalance.Columns[3].Width = 100;
                     dgvBalance.Columns[0].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                     dgvBalance.Columns[2].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-                    dgvBalance.Columns[3].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
                     dgvBalance.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                    dgvBalance.Columns[3].DefaultCellStyle.ForeColor = Color.Green;
-                    dgvBalance.Columns[3].DefaultCellStyle.BackColor = SystemColors.Control;
-                    dgvBalance.Columns[3].DefaultCellStyle.Font =
+                    dgvBalance.Columns[2].DefaultCellStyle.ForeColor = Color.Green;
+                    dgvBalance.Columns[2].DefaultCellStyle.BackColor = SystemColors.Control;
+                    dgvBalance.Columns[2].DefaultCellStyle.Font =
                         new Font("Arial", 12, FontStyle.Bold);
-                    dgvBalance.Columns[3].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                    dgvBalance.Columns[2].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                     DgvBalance_CellMouseClick(dgvBalance, new DataGridViewCellMouseEventArgs(0, 0, 0, 0,
                         new MouseEventArgs(MouseButtons.Left, 1, 0, 0, 0)));
                 }

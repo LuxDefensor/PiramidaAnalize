@@ -117,6 +117,8 @@ namespace PiramidaAnalize
         public long SensorID;
         public long SensorCode;
         public long DeviceID;
+        public long DeviceCode;
+        public string DeviceName;
         public long SubdeviceID;
         public string SensorName;
         #region ToString, Equals and GetHashCode implementation
@@ -155,7 +157,7 @@ namespace PiramidaAnalize
 
         public override string ToString()
         {
-            return this.SensorName;
+            return string.Format("{0}; {1}", this.DeviceName, this.SensorName);
         }
         #endregion
     }

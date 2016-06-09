@@ -112,9 +112,15 @@ namespace PiramidaAnalize
             int pointNumber = 0;
             foreach (DataRow row in dsTemp.Tables[0].Rows)
             {
-                currentPoint = new DataPoint(double.Parse(row["number"].ToString()),
-                    double.Parse(row["value0"].ToString()));
-                currentPoint.AxisLabel = row["time"].ToString();
+                //currentPoint = new DataPoint(double.Parse(row["RowNumber"].ToString()),
+                //    double.Parse(row["Value"].ToString()));
+                currentPoint = new DataPoint();
+                currentPoint.XValue = double.Parse(row["RowNumber"].ToString());
+                if (row["Value"] == null || row["Value"].ToString()==string.Empty)
+                    currentPoint.YValues = null;
+                else
+                    currentPoint.YValues[0] = (double)row["Value"];
+                currentPoint.AxisLabel = row["timecode"].ToString();
                 currentPoint.ToolTip = string.Format("{0}\n{1}:\n{2}", grafikName, currentPoint.AxisLabel, 
                     currentPoint.YValues[0]);
                 grafik.Points.Add(currentPoint);

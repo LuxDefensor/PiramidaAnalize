@@ -414,24 +414,11 @@ namespace PiramidaAnalize
                 cn.Open();
 			StringBuilder sql=new StringBuilder();
             cmdSensors = cn.CreateCommand();
-            sql.Append("SELECT left(convert(nvarchar,DATA_DATE, 108),5) 'time',");
-            sql.Append("DATEPART(HOUR,data_date)*2 + DATEPART(MINUTE,DATA_DATE)/30 number,");
-			sql.Append("value0 FROM Data ");
-			sql.Append("WHERE Parnumber=12 and Object=");
-			sql.Append(deviceCode.ToString());
-			sql.Append(" AND Item=");
-			sql.Append(sensorCode.ToString());
-			sql.Append(" AND Data_Date between '");
-			sql.Append(day1.ToString("yyyyMMdd"));
-			sql.Append(" 00:30' and '");
-			sql.Append(day1.AddDays(1).ToString("yyyyMMdd"));
-			sql.Append("'");
+            sql.AppendFormat("select * from dbo.getprofile({0},{1},'{2}')",
+                deviceCode,sensorCode,day1.ToString("yyyyMMdd"));
 			cmdSensors.CommandText=sql.ToString();
 			SqlDataAdapter daSensors=new SqlDataAdapter(cmdSensors);
-			daSensors.Fill(result);
-            DataRow[] row = result.Tables[0].Select("time='00:00'");            
-            if (row.Length==1)
-                row[0]["number"] = 48;
+			daSensors.Fill(result);      
 			cn.Close();
 			return result;
 		}
@@ -488,6 +475,27 @@ namespace PiramidaAnalize
             drSensors.Close();
             cn.Close();
             return result;
+        }
+
+        /// <summary>
+        /// Returns the sensor's code by its ID
+        /// </summary>
+        /// <param name="ID">Sensor's ID ([ID] field in the Sensors table)</param>
+        /// <returns>Sensor's code ([Code] field in the Sensors table)</returns>
+        public long GetSensorCode(long ID)
+        {
+            object result;
+            long returnValue;
+            SqlConnection cn = new SqlConnection(connectionString);
+            cn.Open();
+            SqlCommand cmd = cn.CreateCommand();
+            cmd.CommandText = string.Format("SELECT Code FROM Sensors WHERE ID={0}", ID);
+            result = cmd.ExecuteScalar();
+            cn.Close();
+            if (result != null && long.TryParse(result.ToString(), out returnValue))
+                return returnValue;
+            else
+                return -1;
         }
         
         /// <summary>
@@ -605,6 +613,8 @@ namespace PiramidaAnalize
         /// <param name="day1">Собственно, день, за который строится карта</param>
         public void FillMap(DataGridView grid, string deviceID, DateTime day1)
         {
+            long deviceCode = GetCode(long.Parse(deviceID));
+            long sensorCode; 
             SqlConnection cn = new SqlConnection(connectionString);
             SqlCommand cmdDevices;
             StringBuilder sql = new StringBuilder();
@@ -643,7 +653,9 @@ namespace PiramidaAnalize
                 int secondM = ((i - 3) % 2) * 30;
                 grid.Columns[i].ToolTipText = string.Format("{0:00}:{1:00} - {2:00}:{3:00}", firstH, firstM, secondH, secondM);
             }
-            foreach(DataGridViewRow r in grid.Rows)
+            foreach (DataGridViewRow r in grid.Rows)
+            {
+                sensorCode = GetSensorCode(long.Parse(r.Cells[0].Value.ToString()));
                 foreach (DataGridViewCell c in r.Cells)
                     if (c.ColumnIndex > 3)
                     {
@@ -657,7 +669,10 @@ namespace PiramidaAnalize
                         else
                             c.Style.BackColor = System.Drawing.Color.Red;
                         c.Style.ForeColor = c.Style.BackColor;
+                        c.ToolTipText = GetSingleHalfhour(deviceCode, sensorCode, 
+                            day1.AddMinutes((c.ColumnIndex - 3) * 30)).ToString();
                     }                
+            }
             cn.Close();
         }
 
@@ -1684,23 +1699,64 @@ namespace PiramidaAnalize
         }
 
         /// <summary>
-        /// Возвращает процент сбора по заданному каналу за заданный интервал времени
+        /// Возвращает процент сбора по заданному каналу или устройству за заданный интервал времени
         /// </summary>
-        /// <param name="ObjectCode">Код устройства (поле Object в таблице Data)</param>
-        /// <param name="ItemCode">Код канала (поле Item в таблице Data)</param>
         /// <param name="dateStart">Начало периода</param>
         /// <param name="dateEnd">Конец периода</param>
-        /// <returns>Процент сбора или -1 при ошибке</returns>
-        public int GetItemPercent12(long ObjectCode, long ItemCode, DateTime dateStart, DateTime dateEnd)
+        /// <param name="parameter">12 - получасовки, 101 - зафиксированные показания</param>
+        /// <param name="entireDevice">Если true - ведётся расчет для всего устройства, если false -
+        /// то для одного канала</param>
+        /// <param name="ObjectCode">Код устройства (поле Object в таблице Data)</param>
+        /// <param name="ItemCode">Код канала (поле Item в таблице Data)</param>
+        /// /// <returns>Процент сбора или -1 при ошибке</returns>
+        public int GetPercent(DateTime dateStart, DateTime dateEnd,
+             int parameter, bool entireDevice, long ObjectCode, long ItemCode = 0)
         {
             object result;
+            string functionName = (entireDevice) ? "dbo.GetPercentDevice" : "dbo.GetPercent";
+            functionName = functionName + parameter.ToString();
             SqlConnection cn = new SqlConnection(connectionString);
             cn.Open();
             SqlCommand cmd = cn.CreateCommand();
-            string sql = string.Format("select dbo.GetPercent12({0},{1},{2},{3})",
-                ObjectCode,ItemCode,dateStart,dateEnd);
+            string sql = string.Format("select {0}({1}{2},'{3}','{4}')",
+                functionName, ObjectCode, (entireDevice) ? "" : "," + ItemCode.ToString(),
+                dateStart.ToString("yyyyMMdd HH:mm"), dateEnd.ToString("yyyyMMdd HH:mm"));
             cmd.CommandText = sql;
-            result = cmd.ExecuteNonQuery();
+            result = cmd.ExecuteScalar();
+            cn.Close();
+            if (result == null)
+                return -1;
+            else
+                return (int)result;
+        }
+
+        /// <summary>
+        /// Возвращает процент сбора по заданной папке за заданный интервал времени
+        /// </summary>
+        /// <param name="dateStart">Начало периода</param>
+        /// <param name="dateEnd">Конец периода</param>
+        /// <param name="parameter">12 - получасовки, 101 - зафиксированные показания</param>
+        /// <param name="folderID">ID папки (поле FolderID в таблице Devices)</param>
+        /// <returns>Процент сбора или -1 при ошибке</returns>
+        public int GetFolderPercent(DateTime dateStart, DateTime dateEnd, int parameter, long folderID)
+        {
+            object result;
+            string functionName = "dbo.GetPercentFolder" + parameter.ToString();
+            string sql = string.Format("select {0}({1},'{2}','{3}')",
+                functionName, folderID, dateStart.ToString("yyyyMMdd HH:mm"), dateEnd.ToString("yyyyMMdd HH:mm"));
+            SqlConnection cn = new SqlConnection(connectionString);
+            cn.Open();
+            SqlCommand cmd = cn.CreateCommand();
+            cmd.CommandText = sql;
+            try
+            {
+                result = cmd.ExecuteScalar();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                result = -1;
+            }
             cn.Close();
             if (result == null)
                 return -1;
@@ -1723,8 +1779,7 @@ namespace PiramidaAnalize
             DataSet result = new DataSet();
             SqlConnection cn = new SqlConnection(connectionString);
             StringBuilder sql = new StringBuilder();
-            sql.Append("select ID Номер, Title 'Название баланса', [Check] 'В список', ");
-            sql.Append("'...' Редактировать ");
+            sql.Append("select ID Номер, Title 'Название баланса', '...' Редактировать ");
             sql.Append("from Balance_main ");
             sql.Append("where ID in ");
             sql.Append("(select distinct Balance.No from Balance ");
@@ -1977,7 +2032,7 @@ namespace PiramidaAnalize
         /// </summary>
         /// <param name="balanceNo">Номер баланса</param>
         /// <param name="writerConnectionString">Строка подключения с правами выполнения хранимой процедуры</param>
-        /// <returns></returns>
+        /// <returns>true если всё прошло успешно</returns>
         public bool DeleteBalance(long balanceNo,string writerConnectionString)
         {
             bool result = true;
@@ -2037,6 +2092,91 @@ namespace PiramidaAnalize
             return result;
         }
 
+        /// <summary>
+        /// Ищет совпадения имён в таблице каналов и возвращает список найденных
+        /// </summary>
+        /// <param name="lookupString">Строка поиска</param>
+        /// <param name="exact">Флаг, указывающий на поиск точного совпадения</param>
+        /// <returns>Список каналов</returns>
+        public List<Sensor> FindByItemName(string lookupString, bool exact)
+        {
+            Sensor s;
+            List<Sensor> result = new List<Sensor>();
+            StringBuilder sql = new StringBuilder();
+            sql.Append("SELECT Devices.Code DevCode, Devices.Name DevName, ");
+            sql.Append("Sensors.Code SensorCode, Sensors.Name ");
+            sql.Append("FROM Devices INNER JOIN Sensors ON Devices.ID=Sensors.StationID ");
+            if (exact)
+                sql.AppendFormat("WHERE Sensors.Name='{0}'", lookupString);
+            else
+                sql.AppendFormat("WHERE Sensors.Name LIKE '%{0}%'", lookupString);
+            SqlConnection cn = new SqlConnection(connectionString);
+            cn.Open();
+            SqlCommand cmd = cn.CreateCommand();
+            cmd.CommandText = sql.ToString();
+            SqlDataReader dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+                s = new Sensor();
+                s.DeviceCode = dr.GetInt32(0);
+                s.DeviceName = dr.GetString(1);
+                s.SensorCode = dr.GetInt32(2);
+                s.SensorName = dr.GetString(3);
+                result.Add(s);
+            }
+            dr.Close();
+            cn.Close();
+            if (result.Count == 0)
+            {
+                s = new Sensor();
+                s.DeviceCode = -1;
+                s.DeviceName = "Не найдено";
+                result.Add(s);
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Ищет совпадения имён в таблице устройств и возвращает список найденных
+        /// </summary>
+        /// <param name="lookupString">Строка поиска</param>
+        /// <param name="exact">Флаг, указывающий на поиск точного совпадения</param>
+        /// <returns>Список устройств</returns>
+        public List<Sensor> FindByDeviceName(string lookupString, bool exact)
+        {
+            Sensor s;
+            List<Sensor> result = new List<Sensor>();
+            StringBuilder sql = new StringBuilder();
+            sql.Append("SELECT Devices.Code DevCode, Devices.Name DevName ");
+            sql.Append("FROM Devices ");
+            if (exact)
+                sql.AppendFormat("WHERE Name='{0}'", lookupString);
+            else
+                sql.AppendFormat("WHERE Name LIKE '%{0}%'", lookupString);
+            SqlConnection cn = new SqlConnection(connectionString);
+            cn.Open();
+            SqlCommand cmd = cn.CreateCommand();
+            cmd.CommandText = sql.ToString();
+            SqlDataReader dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+                s = new Sensor();
+                s.DeviceCode = dr.GetInt32(0);
+                s.DeviceName = dr.GetString(1);
+                result.Add(s);
+            }
+            dr.Close();
+            cn.Close();
+            if (result.Count == 0)
+            {
+                s = new Sensor();
+                s.DeviceCode = -1;
+                s.DeviceName = "Не найдено";
+                result.Add(s);
+            }
+            return result;
+        }
+
         #endregion
 
         #region Private methods
@@ -2070,6 +2210,18 @@ namespace PiramidaAnalize
             }
             drFolders.Close();
             cn.Close();
+            return result;
+        }
+
+        /// <summary>
+        /// Возвращает получасовку в формате "ЧЧ:мм" по её номеру
+        /// </summary>
+        /// <param name="number">номер получасовки</param>
+        /// <returns>получаосвку в формате "ЧЧ:мм"</returns>
+        private string GetTime(int number)
+        {
+            string result;
+            result = (number / 2).ToString("00") + ":" + ((number % 2) * 30).ToString("00");
             return result;
         }
         #endregion

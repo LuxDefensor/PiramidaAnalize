@@ -16,18 +16,10 @@ namespace PiramidaAnalize
             InitializeComponent();
         }
 
-        private void frmSettings_Load(object sender, EventArgs e)
-        {
-
-        }
-
         private void cmdOK_Click(object sender, EventArgs e)
         {
-            //TODO как это вообще должно работать?
-            txtServer.DataBindings["Text"].WriteValue();
-            txtDatabase.DataBindings["Text"].WriteValue();
-            txtUsername.DataBindings["Text"].WriteValue();
-            txtPassword.DataBindings["Text"].WriteValue();
+
+
         }
     }
 }

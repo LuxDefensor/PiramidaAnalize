@@ -13,6 +13,7 @@ namespace PiramidaAnalize
     {
         private DataProvider d;
         private long deviceID;
+        private long sensorCode;
 
         public frmFind()
         {
@@ -20,6 +21,8 @@ namespace PiramidaAnalize
             d = new DataProvider();
             dgvResults.CellContentClick += DgvResults_CellContentClick;
             txtSearch.KeyDown += TxtSearch_KeyDown;
+            deviceID = -1;
+            sensorCode = -1;
         }
 
         private void TxtSearch_KeyDown(object sender, KeyEventArgs e)
@@ -36,11 +39,22 @@ namespace PiramidaAnalize
             }
         }
 
+        public long SensorCode
+        {
+            get
+            {
+                return sensorCode;
+            }
+        }
+
         private void DgvResults_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.ColumnIndex == 4)
             {
                 deviceID = d.GetID(long.Parse(dgvResults[0, e.RowIndex].Value.ToString()));
+                if (dgvResults[2, e.RowIndex].Value!=null &&
+                    dgvResults[2, e.RowIndex].Value.ToString() != string.Empty)
+                    sensorCode = long.Parse(dgvResults[2, e.RowIndex].Value.ToString());
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
@@ -67,11 +81,19 @@ namespace PiramidaAnalize
                         break;
                     }
                 case "По названию устройства":
+                    {
+                        List<Sensor> results = d.FindByDeviceName(txtSearch.Text, chkExact.Checked);
+                        if (results.Count > 0)
+                            foreach (Sensor s in results)
+                                dgvResults.Rows.Add(s.DeviceCode, s.DeviceName);
+                        break;
+                    }
                 case "По названию канала":
                     {
-                        MessageBox.Show("Данная функция находится в стадии разработки\n" +
-                            "Приношу свои извинения", "Нереализованный функционал",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        List<Sensor> results = d.FindByItemName(txtSearch.Text, chkExact.Checked);
+                        if (results.Count > 0)
+                            foreach (Sensor s in results)
+                                dgvResults.Rows.Add(s.DeviceCode, s.DeviceName, s.SensorCode, s.SensorName);
                         break;
                     }
             }

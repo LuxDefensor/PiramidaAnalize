@@ -989,7 +989,7 @@ namespace PiramidaAnalize
             c = c.Resize[lastRow, 3];
             c.NumberFormat = "#,##0.00";
             c = (Excel.Range)ws.Cells[lastRow + 1, 6];
-            c.NumberFormat = "#.00";
+            c.NumberFormat = "0.00";
             c.CurrentRegion.Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
             progress.SetProgress(100);
             xls.Visible = true;

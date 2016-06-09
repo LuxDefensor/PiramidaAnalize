@@ -23,7 +23,6 @@ namespace PiramidaAnalize
         public frmManageBalance(long balance = -1)
         {
             InitializeComponent();
-            parent = (MainForm)this.MdiParent;
             d = new DataProvider();
             exisitngBalance = balance;
             selected = new List<TreeNode>();
@@ -49,9 +48,9 @@ namespace PiramidaAnalize
                     MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
-            if (((MainForm)this.MdiParent).WriterConnectionString == string.Empty)
+            if (parent.WriterConnectionString == string.Empty)
             {
-                if (!((MainForm)MdiParent).GetWriterAccess())
+                if (!parent.GetWriterAccess())
                 {
                     MessageBox.Show("Недостаточно прав для редактирования балансов\n" +
                         "Обратитесь к администратору системы", "Вы не можете редактировать балансы",
@@ -59,7 +58,7 @@ namespace PiramidaAnalize
                     return;
                 }
             }
-            if (!d.TestWriter(((MainForm)MdiParent).WriterConnectionString))
+            if (!d.TestWriter(parent.WriterConnectionString))
             {
                 MessageBox.Show("Недостаточно прав для редактирования балансов\n" +
                     "Обратитесь к администратору системы", "Вы не можете редактировать балансы",
@@ -90,7 +89,7 @@ namespace PiramidaAnalize
                     Int16.Parse(row.Cells[4].Value.ToString()));
             }
             if (d.UpdateBalanceDetails(exisitngBalance, txtTitle.Text, details, 
-                                       ((MainForm)MdiParent).WriterConnectionString))
+                                       parent.WriterConnectionString))
             {
                 MessageBox.Show("Настройки данного баланса успешно изменены", "Сохранение завершено",
                     MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
@@ -264,6 +263,7 @@ namespace PiramidaAnalize
         {
             System.Data.DataSet details;
             long sensorID;
+            parent = (MainForm)this.MdiParent;
             foreach (DataGridViewColumn col in dgvDetailPlus.Columns)
             {
                 dgvDetailMinus.Columns.Add((DataGridViewColumn)col.Clone());
@@ -323,7 +323,21 @@ namespace PiramidaAnalize
 
         private void toolClose_Click(object sender, EventArgs e)
         {
-            // TODO Добавить проверку на пустой баланс
+            if (dgvDetailMinus.Rows.Count == 0 && dgvDetailPlus.Rows.Count==0)
+            {
+                DialogResult resp = MessageBox.Show("Не разрешается создавать пустые балансы.\n" +
+                    "При закрытии этого окна данный баланс будет удалён из базы.\n" +
+                    "Продолжить?", "Баланс не содержит ни одного канала",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (resp == DialogResult.Yes)
+                {
+                    d.DeleteBalance(exisitngBalance, parent.WriterConnectionString);
+                    txtTitle.Text = "Удалён";
+                    dirty = false;
+                }
+                else
+                    return;
+            }
             if (dirty)
             {
                 DialogResult resp = MessageBox.Show("Есть несохранённые изменения в данном балансе.\n" +

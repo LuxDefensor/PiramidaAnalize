@@ -281,7 +281,7 @@ namespace PiramidaAnalize
                                 grafik = chart1.Series.Add(s.SensorCode.ToString());
                                 currentNode.Checked = true;
                                 System.Data.DataSet dsTemp = d.DrawDayGraph(s.SensorID, calMap.SelectionStart);
-                                grafik.Points.DataBindXY(dsTemp.Tables[0].Rows, "time", dsTemp.Tables[0].Rows, "value0");
+                                grafik.Points.DataBindXY(dsTemp.Tables[0].Rows, "timecode", dsTemp.Tables[0].Rows, "Value");
                                 grafik.Color = colors[currentColor % colors.GetLength(0)];
                                 grafik.BorderWidth = 2;
                                 grafik.ChartType = SeriesChartType.Line;
@@ -303,7 +303,10 @@ namespace PiramidaAnalize
             {
                 checkedGrafik = chart1.Series.FindByName(e.Node.Tag.ToString());
                 if (checkedGrafik != null)
+                {
                     checkedGrafik.ChartArea = (e.Node.Checked) ? "ChartArea1" : "";
+                    chart1.ChartAreas["ChartArea1"].RecalculateAxesScale();
+                }
             }
             catch (Exception ex)
             {
@@ -323,6 +326,18 @@ namespace PiramidaAnalize
                 deviceNode = FindNode("D" + deviceID.ToString());
                 mainTree.SelectedNode = deviceNode;
                 deviceNode.EnsureVisible();
+                if (f.SensorCode > 0)
+                {
+                    tabSensors.Select();
+                    foreach (DataGridViewRow row in dgvSensors.Rows)
+                    {
+                        if ((int)row.Cells[1].Value == f.SensorCode)
+                        {
+                            dgvSensors.CurrentCell = row.Cells[0];
+                            
+                        }
+                    }
+                }
             }
         }
 

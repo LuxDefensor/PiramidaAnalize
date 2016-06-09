@@ -157,7 +157,7 @@ namespace PiramidaAnalize
 
         private void LoadTable(long deviceID, int parameter)
         {
-            long totalCells, currentCell;
+            long totalCells;
             int currentRow;
             long deviceCode = d.GetCode(deviceID);
             double currentValue = 0;

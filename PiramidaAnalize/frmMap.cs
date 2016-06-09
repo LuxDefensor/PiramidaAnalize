@@ -189,7 +189,7 @@ namespace PiramidaAnalize
             {
                 case 'F':
                     {
-                        MakeFolderMap(objectID, baseDate, endDate, interval, param, daysCount);                        
+                        MakeFolderMap(objectID, baseDate, endDate, interval, param, daysCount);
                         break;
                     }
                 case 'D':
@@ -235,6 +235,204 @@ namespace PiramidaAnalize
 
         private void MakeFolderMap(long folderID, DateTime baseDate, DateTime endDate, string interval, 
              int parameter=12, int daysCount=0)
+        {
+            List<Folder> folders = new List<Folder>();
+            if (folderID != 0)
+                folders = d.GetImmediateFolders(folderID);
+            List<Device> devices = d.GetDevices(folderID);
+            DateTime currentDate = baseDate;
+            DateTime nextDate;
+            int totalValues, completed = 0;
+            double percent;
+            toolProgressLabel.Visible = true;
+            toolProgressBar.Visible = true;
+            dgvMap.RowCount = folders.Count + devices.Count;
+            switch (interval)
+            {
+                case "halfhour":
+                    {
+                        dgvMap.ColumnCount = 50;
+                        break;
+                    }
+                case "day":
+                    {
+                        dgvMap.ColumnCount = 2 + daysCount;
+                        break;
+                    }
+                case "month":
+                    {
+                        dgvMap.ColumnCount = 14;
+                        break;
+                    }
+            }
+            totalValues = dgvMap.RowCount * (dgvMap.ColumnCount - 2);
+            int currentRow = 0;
+            dgvMap.Columns[0].HeaderText = "Код";
+            dgvMap.Columns[1].HeaderText = "Объект";
+            dgvMap.Columns[0].Frozen = true;
+            dgvMap.Columns[1].Frozen = true;
+            dgvMap.Columns[0].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            dgvMap.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            for (int i = 2; i < dgvMap.ColumnCount; i++)
+            {
+                dgvMap.Columns[i].HeaderText = (i - 1).ToString();
+                dgvMap.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            }
+            this.Refresh();
+            foreach (Folder f in folders)
+            {
+                dgvMap.Rows[currentRow].Cells[0].Value = f.FolderID;
+                if (f.FolderName.Length > 25)
+                    dgvMap.Rows[currentRow].Cells[1].Value = string.Format("{0}...{1}",
+                       f.FolderName.Substring(0, 8), f.FolderName.Substring(f.FolderName.Length - 10));
+                else
+                    dgvMap.Rows[currentRow].Cells[1].Value = f.FolderName;
+                dgvMap.Rows[currentRow].Cells[1].ToolTipText = f.FolderName;
+                dgvMap.Rows[currentRow].Cells[0].Style.BackColor = Color.Cornsilk;
+                dgvMap.Rows[currentRow].Cells[1].Style.BackColor = Color.Cornsilk;
+                currentDate = baseDate;
+                nextDate = baseDate;
+                if (parameter == 12)
+                {
+                    currentDate = currentDate.IterateDate(interval);
+                    nextDate = currentDate.IterateDate(interval);
+                }
+                for (int i = 2; i < dgvMap.ColumnCount; i++)
+                {
+                    percent = d.GetFolderPercent(currentDate, nextDate, parameter, f.FolderID);
+                    dgvMap.Rows[currentRow].Cells[i].Style.BackColor = GetColor(percent);
+                    dgvMap.Rows[currentRow].Cells[i].ToolTipText = percent.ToString("0") + "%";
+                    currentDate = currentDate.IterateDate(interval);
+                    nextDate = nextDate.IterateDate(interval);
+                    completed++;
+                    toolProgressBar.ProgressBar.Value = (int)(100 * completed / totalValues);
+                }
+                dgvMap.Refresh();
+                currentRow++;
+            }
+            foreach (Device dev in devices)
+            {
+                dgvMap.Rows[currentRow].Cells[0].Value = dev.DeviceCode;
+                if (dev.DeviceName.Length > 25)
+                    dgvMap.Rows[currentRow].Cells[1].Value = string.Format("{0}...{1}",
+                        dev.DeviceName.Substring(0, 8), dev.DeviceName.Substring(dev.DeviceName.Length - 10));
+                else
+                    dgvMap.Rows[currentRow].Cells[1].Value = dev.DeviceName;
+                dgvMap.Rows[currentRow].Cells[1].ToolTipText = dev.DeviceName;
+                currentDate = baseDate;
+                nextDate = baseDate;
+                if (parameter == 12)
+                {
+                    currentDate = currentDate.IterateDate(interval);
+                    nextDate = currentDate.IterateDate(interval);
+                }
+                for (int i = 2; i < dgvMap.ColumnCount; i++)
+                {
+                    percent = d.GetPercent(currentDate, nextDate, parameter, true,
+                        dev.DeviceCode);
+                    dgvMap.Rows[currentRow].Cells[i].Style.BackColor = GetColor(percent);
+                    dgvMap.Rows[currentRow].Cells[i].ToolTipText = percent.ToString("0") + "%";
+                    currentDate = currentDate.IterateDate(interval);
+                    nextDate = nextDate.IterateDate(interval);
+                    completed++;
+                    toolProgressBar.ProgressBar.Value = (int)(100 * completed / totalValues);
+                }
+                currentRow++;
+                dgvMap.Refresh();
+            }
+            toolProgressBar.Visible = false;
+            toolProgressLabel.Visible = false;
+        }
+
+        private void MakeDeviceMap(long deviceID, DateTime baseDate, DateTime endDate, string interval,
+            int parameter = 12, int daysCount = 0)
+        {
+            List<Sensor> sensors = d.GetSensors(deviceID);
+            DateTime currentDate = baseDate;
+            DateTime nextDate;
+            long deviceCode = d.GetCode(deviceID);
+            int totalValues, completed = 0;
+            double percent;
+            toolProgressLabel.Visible = true;
+            toolProgressBar.Visible = true;
+            dgvMap.RowCount = sensors.Count;
+            switch (interval)
+            {
+                case "halfhour":
+                    {
+                        dgvMap.ColumnCount = 50;
+                        break;
+                    }
+                case "day":
+                    {
+                        dgvMap.ColumnCount = 2 + daysCount;
+                        break;
+                    }
+                case "month":
+                    {
+                        dgvMap.ColumnCount = 14;
+                        break;
+                    }
+            }
+            dgvMap.Columns[0].HeaderText = "Код";
+            dgvMap.Columns[1].HeaderText = "Объект";
+            dgvMap.Columns[0].Frozen = true;
+            dgvMap.Columns[1].Frozen = true;
+            dgvMap.Columns[0].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            dgvMap.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            for (int i = 2; i < dgvMap.ColumnCount; i++)
+            {
+                dgvMap.Columns[i].HeaderText = (i - 1).ToString();
+                dgvMap.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            }
+            totalValues = dgvMap.RowCount * (dgvMap.ColumnCount - 2);
+            int currentRow = 0;
+            this.Refresh();
+            foreach (Sensor s in sensors)
+            {
+                dgvMap.Rows[currentRow].Cells[0].Value = s.SensorCode;
+                if (s.SensorName.Length > 25)
+                    dgvMap.Rows[currentRow].Cells[1].Value = string.Format("{0}...{1}",
+                        s.SensorName.Substring(0, 8), s.SensorName.Substring(s.SensorName.Length - 10));
+                else
+                    dgvMap.Rows[currentRow].Cells[1].Value = s.SensorName;
+                dgvMap.Rows[currentRow].Cells[1].ToolTipText = s.SensorName;
+                currentDate = baseDate;
+                nextDate = baseDate;
+                if (parameter == 12)
+                {
+                    currentDate = currentDate.IterateDate("halfhour");
+                    nextDate = currentDate.IterateDate(interval);
+                }
+                for (int i = 2; i < dgvMap.ColumnCount; i++)
+                {
+                    percent = d.GetPercent(currentDate, nextDate, parameter,
+                        false, deviceCode, s.SensorCode);
+                    dgvMap.Rows[currentRow].Cells[i].Style.BackColor = GetColor(percent);
+                    dgvMap.Rows[currentRow].Cells[i].ToolTipText = percent.ToString("0") + "%";
+                    currentDate = currentDate.IterateDate(interval);
+                    nextDate = nextDate.IterateDate(interval);
+                    completed++;
+                    toolProgressBar.ProgressBar.Value = (int)(100 * completed / totalValues);
+                }                
+                currentRow++;
+                dgvMap.Refresh();
+            }
+            toolProgressBar.Visible = false;
+            toolProgressLabel.Visible = false;
+        }
+
+        /// <summary>
+        /// Старая версия функции сохранена на всякий случай
+        /// </summary>
+        /// <param name="folderID"></param>
+        /// <param name="baseDate"></param>
+        /// <param name="endDate"></param>
+        /// <param name="interval"></param>
+        /// <param name="parameter"></param>
+        /// <param name="daysCount"></param>
+        private void MakeFolderMap_Old(long folderID, DateTime baseDate, DateTime endDate, string interval,
+     int parameter = 12, int daysCount = 0)
         {
             List<Folder> folders = new List<Folder>();
             if (folderID != 0)
@@ -301,7 +499,7 @@ namespace PiramidaAnalize
                     currentDate = currentDate.IterateDate(interval);
                     completed++;
                     toolProgressBar.ProgressBar.Value = (int)(100 * completed / totalValues);
-                }     
+                }
                 currentRow++;
             }
             foreach (Device dev in devices)
@@ -332,7 +530,16 @@ namespace PiramidaAnalize
             toolProgressLabel.Visible = false;
         }
 
-        private void MakeDeviceMap(long deviceID, DateTime baseDate, DateTime endDate, string interval,
+        /// <summary>
+        /// Старая версия функции сохранена на всякий случай
+        /// </summary>
+        /// <param name="deviceID"></param>
+        /// <param name="baseDate"></param>
+        /// <param name="endDate"></param>
+        /// <param name="interval"></param>
+        /// <param name="parameter"></param>
+        /// <param name="daysCount"></param>
+        private void MakeDeviceMap_Old(long deviceID, DateTime baseDate, DateTime endDate, string interval,
             int parameter = 12, int daysCount = 0)
         {
             List<Sensor> sensors = d.GetSensors(deviceID);
@@ -395,7 +602,7 @@ namespace PiramidaAnalize
                     currentDate = currentDate.IterateDate(interval);
                     completed++;
                     toolProgressBar.ProgressBar.Value = (int)(100 * completed / totalValues);
-                }                
+                }
                 currentRow++;
             }
             toolProgressBar.Visible = false;
