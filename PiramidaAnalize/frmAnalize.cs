@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using System.Data;
 using System.Drawing.Printing;
+using System.Collections.Generic;
 
 namespace PiramidaAnalize
 {
@@ -102,9 +103,11 @@ namespace PiramidaAnalize
             string stringSensorID = mainTree.SelectedNode.Tag.ToString().Substring(1);
             long sensorID;
             long.TryParse(stringSensorID, out sensorID);
+            Dictionary<string, string> info = d.SensorInfo(sensorID);
             DateTime theDay;
             DateTime.TryParse(dgvSensors.CurrentRow.Cells[0].Value.ToString(), out theDay);
-            grafikName = d.GetName("Sensor", stringSensorID) + " " + theDay.ToString("yyyy-MM-dd");            
+            grafikName = string.Format("{0} {1} : {2}",
+                info["DeviceName"], info["SensorName"], theDay.ToString("yyyy-MM-dd"));
             DataSet dsTemp = d.DrawDayGraph(sensorID, theDay);
             //grafik.Points.DataBindY(dsTemp.Tables[0].Rows, "value0");            
             //grafik.Points.DataBindXY(dsTemp.Tables[0].Rows, "time", dsTemp.Tables[0].Rows, "value0");

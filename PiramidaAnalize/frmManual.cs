@@ -310,6 +310,7 @@ namespace PiramidaAnalize
         {
             DateTime currentDate = dateSave;
             long deviceCode = d.GetCode(deviceID);
+            this.Cursor = Cursors.WaitCursor;
             try
             {
                 foreach (DataGridViewRow row in dgvData.Rows)
@@ -366,6 +367,10 @@ namespace PiramidaAnalize
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+                this.Cursor = Cursors.Default;
             }
             MessageBox.Show("Данные успешно занесены в базу", "Запись завершена",
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -664,6 +669,44 @@ namespace PiramidaAnalize
                     dgvData.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
                     dgvExcel.Rows.Clear();
                 }
+            }
+            txtDate.Text = currentDate.ToLongDateString();
+            dataChanged = true;
+        }
+
+        private void btnZero_Click(object sender, EventArgs e)
+        {
+            if (dataChanged)
+            {
+                if (MessageBox.Show("Все несохранённые данные, введённые вручную в таблице, будут утеряны\n" +
+                    "Вы уверены, что хотите заполнить таблицу нулями?", "Подтверждение",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                {
+                    return;
+                }
+            }
+            if (currentDevice > 0)
+            {
+                if (opt12.Checked)
+                {
+                    foreach (DataGridViewRow row in dgvData.Rows)
+                    {
+                        foreach (DataGridViewCell cell in row.Cells)
+                        {
+                            if (cell.ColumnIndex > 2)
+                            {
+                                cell.Value = 0;
+                                cell.Tag = "Update";
+                                cell.Style.Font = new 
+                                    Font(dgvData.DefaultCellStyle.Font, FontStyle.Bold);
+                            }
+                        }
+                        row.Cells[2].Style.Font = new
+                            Font(dgvData.DefaultCellStyle.Font, FontStyle.Bold);
+                        row.Cells[2].Value = 0;
+                    }
+                }
+                dgvData.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
             }
             txtDate.Text = currentDate.ToLongDateString();
             dataChanged = true;

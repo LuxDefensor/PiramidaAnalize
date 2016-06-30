@@ -36,9 +36,6 @@
             this.dgvData = new System.Windows.Forms.DataGridView();
             this.panel1 = new System.Windows.Forms.Panel();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.cmdFromExcel = new System.Windows.Forms.Button();
-            this.cmdSave = new System.Windows.Forms.Button();
-            this.cmdLoad = new System.Windows.Forms.Button();
             this.txtDate = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
@@ -48,6 +45,11 @@
             this.tipLoad = new System.Windows.Forms.ToolTip(this.components);
             this.tipSave = new System.Windows.Forms.ToolTip(this.components);
             this.tipExcel = new System.Windows.Forms.ToolTip(this.components);
+            this.btnZero = new System.Windows.Forms.Button();
+            this.cmdFromExcel = new System.Windows.Forms.Button();
+            this.cmdSave = new System.Windows.Forms.Button();
+            this.cmdLoad = new System.Windows.Forms.Button();
+            this.tipZero = new System.Windows.Forms.ToolTip(this.components);
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvData)).BeginInit();
             this.panel1.SuspendLayout();
@@ -115,52 +117,16 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.btnZero);
             this.groupBox2.Controls.Add(this.cmdFromExcel);
             this.groupBox2.Controls.Add(this.cmdSave);
             this.groupBox2.Controls.Add(this.cmdLoad);
             this.groupBox2.Location = new System.Drawing.Point(251, 51);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(278, 100);
+            this.groupBox2.Size = new System.Drawing.Size(361, 100);
             this.groupBox2.TabIndex = 4;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Команды";
-            // 
-            // cmdFromExcel
-            // 
-            this.cmdFromExcel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("cmdFromExcel.BackgroundImage")));
-            this.cmdFromExcel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.cmdFromExcel.Location = new System.Drawing.Point(183, 19);
-            this.cmdFromExcel.Name = "cmdFromExcel";
-            this.cmdFromExcel.Size = new System.Drawing.Size(79, 75);
-            this.cmdFromExcel.TabIndex = 2;
-            this.tipExcel.SetToolTip(this.cmdFromExcel, "Загрузить в БД данные из файла Excel");
-            this.cmdFromExcel.UseVisualStyleBackColor = true;
-            this.cmdFromExcel.Click += new System.EventHandler(this.cmdFromExcel_Click);
-            // 
-            // cmdSave
-            // 
-            this.cmdSave.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("cmdSave.BackgroundImage")));
-            this.cmdSave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.cmdSave.Location = new System.Drawing.Point(98, 19);
-            this.cmdSave.Name = "cmdSave";
-            this.cmdSave.Size = new System.Drawing.Size(79, 75);
-            this.cmdSave.TabIndex = 1;
-            this.tipSave.SetToolTip(this.cmdSave, "Записать в БД данные, введённые вручную (существующие данные будут перезаписаны)");
-            this.cmdSave.UseVisualStyleBackColor = true;
-            this.cmdSave.Click += new System.EventHandler(this.cmdSave_Click);
-            // 
-            // cmdLoad
-            // 
-            this.cmdLoad.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("cmdLoad.BackgroundImage")));
-            this.cmdLoad.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.cmdLoad.Location = new System.Drawing.Point(13, 19);
-            this.cmdLoad.Name = "cmdLoad";
-            this.cmdLoad.Size = new System.Drawing.Size(79, 75);
-            this.cmdLoad.TabIndex = 0;
-            this.tipLoad.SetToolTip(this.cmdLoad, "Загрузить в таблицу ниже данные из БД (все несохраненные изменения будут потеряны" +
-        ")");
-            this.cmdLoad.UseVisualStyleBackColor = true;
-            this.cmdLoad.Click += new System.EventHandler(this.cmdLoad_Click);
             // 
             // txtDate
             // 
@@ -241,6 +207,61 @@
             this.tipExcel.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
             this.tipExcel.ToolTipTitle = "Импорт данных из Excel";
             // 
+            // btnZero
+            // 
+            this.btnZero.BackgroundImage = global::PiramidaAnalize.Properties.Resources.FillZeroes;
+            this.btnZero.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.btnZero.Location = new System.Drawing.Point(268, 19);
+            this.btnZero.Name = "btnZero";
+            this.btnZero.Size = new System.Drawing.Size(79, 75);
+            this.btnZero.TabIndex = 3;
+            this.tipZero.SetToolTip(this.btnZero, "Записать во все каналы нули");
+            this.btnZero.UseVisualStyleBackColor = true;
+            this.btnZero.Click += new System.EventHandler(this.btnZero_Click);
+            // 
+            // cmdFromExcel
+            // 
+            this.cmdFromExcel.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("cmdFromExcel.BackgroundImage")));
+            this.cmdFromExcel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.cmdFromExcel.Location = new System.Drawing.Point(183, 19);
+            this.cmdFromExcel.Name = "cmdFromExcel";
+            this.cmdFromExcel.Size = new System.Drawing.Size(79, 75);
+            this.cmdFromExcel.TabIndex = 2;
+            this.tipExcel.SetToolTip(this.cmdFromExcel, "Загрузить в БД данные из файла Excel");
+            this.cmdFromExcel.UseVisualStyleBackColor = true;
+            this.cmdFromExcel.Click += new System.EventHandler(this.cmdFromExcel_Click);
+            // 
+            // cmdSave
+            // 
+            this.cmdSave.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("cmdSave.BackgroundImage")));
+            this.cmdSave.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.cmdSave.Location = new System.Drawing.Point(98, 19);
+            this.cmdSave.Name = "cmdSave";
+            this.cmdSave.Size = new System.Drawing.Size(79, 75);
+            this.cmdSave.TabIndex = 1;
+            this.tipSave.SetToolTip(this.cmdSave, "Записать в БД данные, введённые вручную (существующие данные будут перезаписаны)");
+            this.cmdSave.UseVisualStyleBackColor = true;
+            this.cmdSave.Click += new System.EventHandler(this.cmdSave_Click);
+            // 
+            // cmdLoad
+            // 
+            this.cmdLoad.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("cmdLoad.BackgroundImage")));
+            this.cmdLoad.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.cmdLoad.Location = new System.Drawing.Point(13, 19);
+            this.cmdLoad.Name = "cmdLoad";
+            this.cmdLoad.Size = new System.Drawing.Size(79, 75);
+            this.cmdLoad.TabIndex = 0;
+            this.tipLoad.SetToolTip(this.cmdLoad, "Загрузить в таблицу ниже данные из БД (все несохраненные изменения будут потеряны" +
+        ")");
+            this.cmdLoad.UseVisualStyleBackColor = true;
+            this.cmdLoad.Click += new System.EventHandler(this.cmdLoad_Click);
+            // 
+            // tipZero
+            // 
+            this.tipZero.IsBalloon = true;
+            this.tipZero.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Info;
+            this.tipZero.ToolTipTitle = "Заполнение нулями";
+            // 
             // frmManual
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -283,5 +304,7 @@
         private System.Windows.Forms.ToolTip tipLoad;
         private System.Windows.Forms.Button cmdFromExcel;
         private System.Windows.Forms.ToolTip tipExcel;
+        private System.Windows.Forms.Button btnZero;
+        private System.Windows.Forms.ToolTip tipZero;
     }
 }

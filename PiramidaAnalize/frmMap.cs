@@ -294,7 +294,7 @@ namespace PiramidaAnalize
                 nextDate = baseDate;
                 if (parameter == 12)
                 {
-                    currentDate = currentDate.IterateDate(interval);
+                    currentDate = currentDate.IterateDate("halfhour");
                     nextDate = currentDate.IterateDate(interval);
                 }
                 for (int i = 2; i < dgvMap.ColumnCount; i++)
@@ -323,7 +323,7 @@ namespace PiramidaAnalize
                 nextDate = baseDate;
                 if (parameter == 12)
                 {
-                    currentDate = currentDate.IterateDate(interval);
+                    currentDate = currentDate.IterateDate("halfhour");
                     nextDate = currentDate.IterateDate(interval);
                 }
                 for (int i = 2; i < dgvMap.ColumnCount; i++)

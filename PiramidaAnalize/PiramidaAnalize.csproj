@@ -243,6 +243,7 @@
     <None Include="packages.config" />
     <None Include="Resources\32.32.32.P2kClient.exe.00001.png" />
     <None Include="Resources\AddNew.png" />
+    <None Include="Resources\FillZeroes.png" />
     <Content Include="Scripts\UPDATEBALANCETITLE.sql" />
     <None Include="Resources\Save.jpg" />
     <Content Include="Scripts\ADDBALANCE.sql" />
