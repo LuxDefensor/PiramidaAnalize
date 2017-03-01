@@ -269,5 +269,32 @@ namespace PiramidaAnalize
                 f.WindowState = FormWindowState.Maximized;
             }
         }
+
+        private void mnuHelp_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void mnuColors_Click(object sender, EventArgs e)
+        {
+            string windowTitle = "Цвета";
+            bool contains = false;
+            foreach (Form child in this.MdiChildren)
+                if (child.Text == windowTitle)
+                {
+                    child.Activate();
+                    contains = true;
+                    break;
+                }
+            if (!contains)
+            {
+                frmTestColors f = new frmTestColors();
+                this.Cursor = Cursors.WaitCursor;
+                f.MdiParent = this;
+                f.Text = windowTitle;
+                f.Show();
+                f.WindowState = FormWindowState.Maximized;
+            }
+        }
     }
 }

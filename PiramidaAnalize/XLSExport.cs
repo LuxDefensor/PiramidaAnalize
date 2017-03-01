@@ -940,17 +940,22 @@ namespace PiramidaAnalize
             int currentRowLeft = 6;
             int currentRowRight = 6;
             progress.SetProgress(1);
+            DateTime adjustedEndDate = dateTill.AddDays(1);
             foreach (DataRow row in details.Tables[0].Rows)
             {
                 if (row.Field<Int16>(3) == 12)
                 {
                     consumption = d.GetConsumption(row.Field<int>(4),
                        row.Field<int>(5), dateFrom, dateTill);
+                    if (consumption < 0)
+                        consumption = 0;
                 }
                 else
                 {
                     consumption = d.GetConsumptionFixed(row.Field<int>(4),
-                        row.Field<int>(5), dateFrom, dateTill);
+                        row.Field<int>(5), dateFrom, adjustedEndDate);
+                    if (consumption < 0)
+                        consumption = 0;
                 }
                 if (row.Field<Int16>(0) == -1)
                 {

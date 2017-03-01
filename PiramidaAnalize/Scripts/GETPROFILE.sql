@@ -1,12 +1,17 @@
 USE [Piramida2000]
 GO
 
-/****** Object:  UserDefinedFunction [dbo].[GetProfile]    Script Date: 06/07/2016 15:37:49 ******/
+/****** Object:  UserDefinedFunction [dbo].[GetProfile]    Script Date: 02.11.2016 15:15:02 ******/
+DROP FUNCTION [dbo].[GetProfile]
+GO
+
+/****** Object:  UserDefinedFunction [dbo].[GetProfile]    Script Date: 02.11.2016 15:15:02 ******/
 SET ANSI_NULLS ON
 GO
 
 SET QUOTED_IDENTIFIER ON
 GO
+
 
 -- =============================================
 -- Author:		Г.Г. Михайленко
@@ -50,11 +55,14 @@ end
 
 insert into @Result(RowNumber,FullDate,Timecode,Value)
 	SELECT number, fulldate,timecode,
-		dbo.getonedata(@Object,@Item,12,fulldate) Value
-	FROM @halfhours t1
-	
+	t2.VALUE0
+	FROM @halfhours t1 
+	cross apply (select value0 from data
+			 where object=@Object and item=@Item and parnumber=12
+			 and data_date=t1.fulldate) t2
 RETURN
 END
+
 
 GO
 

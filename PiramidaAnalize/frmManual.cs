@@ -326,7 +326,8 @@ namespace PiramidaAnalize
                                 {
                                     d.WriteOneData(parent.WriterConnectionString, 12, deviceCode,
                                         long.Parse(dgvData[0, row.Index].Value.ToString()), currentDate,
-                                        double.Parse(dgvData[i, row.Index].Value.ToString()));
+                                        double.Parse(dgvData[i, row.Index].Value.ToString().Replace(',', '.'),
+                                                     System.Globalization.CultureInfo.InvariantCulture.NumberFormat));
                                     dgvData[i, row.Index].Tag = null;
                                     dgvData[i, row.Index].Style.Font = new Font(dgvData.DefaultCellStyle.Font, FontStyle.Regular);
                                 }
@@ -349,7 +350,8 @@ namespace PiramidaAnalize
                             {
                                 d.WriteOneData(parent.WriterConnectionString, 101, deviceCode,
                                     long.Parse(dgvData[0, row.Index].Value.ToString()), dateSave,
-                                    long.Parse(dgvData[6, row.Index].Value.ToString()));
+                                    double.Parse(dgvData[6, row.Index].Value.ToString().Replace(',', '.'),
+                                                 System.Globalization.CultureInfo.InvariantCulture.NumberFormat));
                                 dgvData[6, row.Index].Tag = null;
                                 dgvData[6, row.Index].Style.Font = new Font(dgvData.DefaultCellStyle.Font, FontStyle.Regular);
                             }

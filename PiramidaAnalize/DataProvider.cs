@@ -944,7 +944,7 @@ namespace PiramidaAnalize
             }
             catch
             {
-                return -1;
+                ktr = 1;
             }
             sql.Clear();
             if (cn.State == ConnectionState.Open)
@@ -1278,7 +1278,6 @@ namespace PiramidaAnalize
             bool result = true;
             SqlConnection cn = new SqlConnection(writeConnectionString);
             SqlCommand cmd;
-            SqlTransaction trans;
             try
             {
                 cn.Open();
@@ -1289,18 +1288,17 @@ namespace PiramidaAnalize
                 cmd.Parameters.AddWithValue("@item_", sensorCode);
                 cmd.Parameters.AddWithValue("@data_date_", datePoint);
                 cmd.Parameters.AddWithValue("@value_", val);
-                trans = cn.BeginTransaction();
-                cmd.Transaction = trans;
                 int rows = cmd.ExecuteNonQuery();
-                trans.Commit();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Ошибка функции записи в БД", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 result = false;
             }
-            if (cn.State == ConnectionState.Open)
+            finally
+            {
                 cn.Close();
+            }
             return result;
         }
 

@@ -307,6 +307,7 @@ namespace PiramidaAnalize
                     completed++;
                     toolProgressBar.ProgressBar.Value = (int)(100 * completed / totalValues);
                 }
+                Application.DoEvents();
                 dgvMap.Refresh();
                 currentRow++;
             }
@@ -337,6 +338,7 @@ namespace PiramidaAnalize
                     completed++;
                     toolProgressBar.ProgressBar.Value = (int)(100 * completed / totalValues);
                 }
+                Application.DoEvents();
                 currentRow++;
                 dgvMap.Refresh();
             }
@@ -414,7 +416,8 @@ namespace PiramidaAnalize
                     nextDate = nextDate.IterateDate(interval);
                     completed++;
                     toolProgressBar.ProgressBar.Value = (int)(100 * completed / totalValues);
-                }                
+                }
+                Application.DoEvents();
                 currentRow++;
                 dgvMap.Refresh();
             }

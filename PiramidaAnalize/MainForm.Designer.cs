@@ -53,6 +53,7 @@ namespace PiramidaAnalize
             this.mnuHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuTest = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuColors = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuMain.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -166,10 +167,12 @@ namespace PiramidaAnalize
             // 
             this.mnuHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mnuAbout,
-            this.mnuTest});
+            this.mnuTest,
+            this.mnuColors});
             this.mnuHelp.Name = "mnuHelp";
             this.mnuHelp.Size = new System.Drawing.Size(65, 20);
             this.mnuHelp.Text = "&Справка";
+            this.mnuHelp.Click += new System.EventHandler(this.mnuHelp_Click);
             // 
             // mnuAbout
             // 
@@ -184,6 +187,13 @@ namespace PiramidaAnalize
             this.mnuTest.Size = new System.Drawing.Size(154, 22);
             this.mnuTest.Text = "Тестовое окно";
             this.mnuTest.Click += new System.EventHandler(this.mnuTest_Click);
+            // 
+            // mnuColors
+            // 
+            this.mnuColors.Name = "mnuColors";
+            this.mnuColors.Size = new System.Drawing.Size(154, 22);
+            this.mnuColors.Text = "Цвета";
+            this.mnuColors.Click += new System.EventHandler(this.mnuColors_Click);
             // 
             // MainForm
             // 
@@ -221,5 +231,6 @@ namespace PiramidaAnalize
 		private System.Windows.Forms.ToolStripMenuItem mnuFile;
 		private System.Windows.Forms.MenuStrip mnuMain;
         private System.Windows.Forms.ToolStripMenuItem mnuTest;
-	}
+        private System.Windows.Forms.ToolStripMenuItem mnuColors;
+    }
 }

@@ -49,8 +49,8 @@
             this.label1 = new System.Windows.Forms.Label();
             this.dtFrom = new System.Windows.Forms.DateTimePicker();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolExcel = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolList = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolAddNew = new System.Windows.Forms.ToolStripButton();
@@ -290,11 +290,6 @@
             this.toolStrip1.Size = new System.Drawing.Size(509, 25);
             this.toolStrip1.TabIndex = 0;
             // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-            // 
             // toolExcel
             // 
             this.toolExcel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -302,7 +297,12 @@
             this.toolExcel.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolExcel.Name = "toolExcel";
             this.toolExcel.Size = new System.Drawing.Size(23, 22);
-            this.toolExcel.Text = "toolStripButton1";
+            this.toolExcel.Text = "Вывод в Excel";
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
             // 
             // toolList
             // 
