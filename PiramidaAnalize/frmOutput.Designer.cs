@@ -51,6 +51,7 @@
             this.btnDeletePreset = new System.Windows.Forms.Button();
             this.btnSavePreset = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.btnRefreshPresets = new System.Windows.Forms.Button();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -218,6 +219,7 @@
             this.lstPresets.TabIndex = 9;
             this.toolTip1.SetToolTip(this.lstPresets, "Двойной щелчок - загручить набор каналов в дерево");
             this.lstPresets.DoubleClick += new System.EventHandler(this.LstPresets_DoubleClick);
+            this.lstPresets.Enter += new System.EventHandler(this.lstPresets_Enter);
             // 
             // label2
             // 
@@ -257,11 +259,26 @@
             this.btnSavePreset.UseVisualStyleBackColor = true;
             this.btnSavePreset.Click += new System.EventHandler(this.BtnSavePreset_Click);
             // 
+            // btnRefreshPresets
+            // 
+            this.btnRefreshPresets.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnRefreshPresets.Font = new System.Drawing.Font("Webdings", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(2)));
+            this.btnRefreshPresets.ForeColor = System.Drawing.Color.Blue;
+            this.btnRefreshPresets.Location = new System.Drawing.Point(260, 370);
+            this.btnRefreshPresets.Name = "btnRefreshPresets";
+            this.btnRefreshPresets.Size = new System.Drawing.Size(38, 36);
+            this.btnRefreshPresets.TabIndex = 14;
+            this.btnRefreshPresets.Text = "q";
+            this.toolTip1.SetToolTip(this.btnRefreshPresets, "Обновить список наборов");
+            this.btnRefreshPresets.UseVisualStyleBackColor = true;
+            this.btnRefreshPresets.Click += new System.EventHandler(this.btnRefreshPresets_Click);
+            // 
             // frmOutput
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(795, 464);
+            this.Controls.Add(this.btnRefreshPresets);
             this.Controls.Add(this.btnDeletePreset);
             this.Controls.Add(this.btnSavePreset);
             this.Controls.Add(this.label2);
@@ -309,5 +326,6 @@
         private System.Windows.Forms.Button btnDeletePreset;
         private System.Windows.Forms.Button btnSavePreset;
         private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.Button btnRefreshPresets;
     }
 }

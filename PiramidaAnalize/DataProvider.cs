@@ -980,6 +980,26 @@ namespace PiramidaAnalize
         }
 
         /// <summary>
+        /// Рекурсивная функция, которая перебирает все ветви дерева
+        /// и добавляет в результирующий список только те узлы, которые
+        /// относятся к каналам связи (sensors), то есть у них имя начинается с буквы 'S',
+        /// и у которых установлен флажок.
+        /// </summary>
+        /// <param name="root">Корневой узел дерева</param>
+        /// <returns>Список имён узлов дерева, соответствующих выбранным каналам</returns>
+        public List<string> GetSelectedSensorsNodes(TreeNode root)
+        {
+            List<string> result = new List<string>();
+            foreach (TreeNode n in root.Nodes)
+            {
+                if (n.Checked && n.Name[0] == 'S')
+                    result.Add(n.Name);
+                result.AddRange(GetSelectedSensorsNodes(n));
+            }
+            return result;
+        }
+
+        /// <summary>
         /// Возвращает единтсвенное вещественное число - потребление по заданному каналу за день
         /// </summary>
         /// <param name="deviceCode">Код устройства</param>
@@ -1258,6 +1278,193 @@ namespace PiramidaAnalize
                 cn.Close();
             return result;
         }
+
+        #region Наборы каналов
+
+        /// <summary>
+        /// Saves a set of sensor IDs in SensorSets table in the database
+        /// </summary>
+        /// <param name="title">The set's unique name</param>
+        /// <param name="sensorIDs">A string containing sensor IDs separated by semicolons</param>
+        /// <returns>true if the operation was successful</returns>
+        public bool SaveSensorsSet(string title, string[] sensorIDs)
+        {
+            object dbResult;
+            using (SqlConnection cn = new SqlConnection(connectionString))
+            {
+                cn.Open();
+                string sql = "SELECT count(*) FROM SensorSets WHERE Title='" + title + "'";
+                SqlCommand cmd = cn.CreateCommand();
+                cmd.CommandText = sql;
+                try
+                {
+                    dbResult = cmd.ExecuteScalar();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ошибка при проверке имени набора" + Environment.NewLine + ex.Message,
+                        "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+                if (dbResult == null || Convert.IsDBNull(dbResult))
+                {
+                    MessageBox.Show("Запрос " + sql + Environment.NewLine + "вернул пустой набор строк",
+                        "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+                if ((int)dbResult > 0)
+                {
+                    MessageBox.Show("Набор с именем " + title + " уже существует", "Неправильное имя",
+                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    return false;
+                }
+                sql = "INSERT INTO SensorSets (Title,SensorIDs) VALUES ('" + title + "','" +
+                    string.Join(";", sensorIDs) + "')";
+                cmd.CommandText = sql;
+                try
+                {
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ошибка записи набора в БД:" + Environment.NewLine + ex.Message,
+                        "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Reads an array of sensor IDs from a database table
+        /// </summary>
+        /// <param name="title">The set's unique name</param>
+        /// <returns>An array of IDs in the same format which is used to identify the channels in the object tree</returns>
+        public string[] ReadSensorsSet(string title)
+        {
+            string[] result;
+            object dbResult;
+            using (SqlConnection cn = new SqlConnection(connectionString))
+            {
+                cn.Open();
+                string sql = "SELECT SensorIDs FROM SensorSets WHERE Title='" + title + "'";
+                SqlCommand cmd = cn.CreateCommand();
+                cmd.CommandText = sql;
+                try
+                {
+                    dbResult = cmd.ExecuteScalar();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ошибка выполнения запроса:" + Environment.NewLine + sql + Environment.NewLine + ex.Message,
+                        "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return null;
+                }
+                if (dbResult == null || Convert.IsDBNull(dbResult))
+                {
+                    MessageBox.Show("Набор " + title + Environment.NewLine + "не существует в базе данных",
+                        "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return null;
+                }
+                try
+                {
+                    result = dbResult.ToString().Split(';');
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ошибка распознавания списка каналов:" + Environment.NewLine + dbResult.ToString() + 
+                        Environment.NewLine + ex.Message,
+                        "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return null;
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Deletes a set of sensor IDs by its title
+        /// </summary>
+        /// <param name="title">The set's unique name</param>
+        /// <returns>true if the operation was successful</returns>
+        public bool DeleteSensorsSet(string title)
+        {
+            object dbResult;
+            using (SqlConnection cn = new SqlConnection(connectionString))
+            {
+                cn.Open();
+                string sql = "SELECT count(*) FROM SensorSets WHERE Title='" + title + "'";
+                SqlCommand cmd = cn.CreateCommand();
+                cmd.CommandText = sql;
+                try
+                {
+                    dbResult = cmd.ExecuteScalar();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ошибка при проверке имени набора" + Environment.NewLine + ex.Message,
+                        "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+                if (dbResult == null || Convert.IsDBNull(dbResult))
+                {
+                    MessageBox.Show("Запрос " + sql + Environment.NewLine + "вернул пустой набор строк",
+                        "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+                if ((int)dbResult == 0)
+                {
+                    MessageBox.Show("Набор с именем " + title + " не существует в базе данных", "Невозможно удалить",
+                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    return false;
+                }
+                sql = "DELETE FROM SensorSets WHERE Title='" + title + "'";
+                cmd.CommandText = sql;
+                try
+                {
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ошибка записи набора в БД:" + Environment.NewLine + ex.Message,
+                        "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Gets the full list of sensor sets' names from the database
+        /// </summary>
+        /// <returns>The list of sensor sets' names as an array of strings</returns>
+        public string[] GetSensorSetsList()
+        {
+            List<string> result;
+            using (SqlConnection cn = new SqlConnection(connectionString))
+            {
+                cn.Open();
+                string sql = "SELECT Title FROM SensorSets";
+                SqlCommand cmd = cn.CreateCommand();
+                cmd.CommandText = sql;
+                SqlDataReader dr;
+                try
+                {
+                    dr = cmd.ExecuteReader();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ошибка выполнения запроса:" + Environment.NewLine + sql + Environment.NewLine + ex.Message,
+                        "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return null;
+                }
+                result = new List<string>();
+                while (dr.Read())
+                    result.Add(dr[0].ToString());
+            }
+            return result.ToArray();
+        }
+
+        #endregion
 
         #region Запись данных в базу
 

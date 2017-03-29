@@ -16,14 +16,6 @@ namespace PiramidaAnalize
         private DataProvider d;
         private XLSExport xls;
         private bool callTreeEventsRecursively = true;
-        private List<string> selected;
-        private char[] invalidChars = Path.GetInvalidFileNameChars();
-        private string presetFolder;
-        private string[] presetsComment = new string[] {"# Этот файл относится к системе Пирамида 2000",
-                                "# Он используется программой PirammidaAnalize",
-                                "# для хранения наборов измерительных каналов.",
-                                "# Не удалять!",
-                                "######################################################################"};
 
         public frmOutput()
         {
@@ -32,7 +24,6 @@ namespace PiramidaAnalize
 
         private void frmOutput_Load(object sender, EventArgs e)
         {
-            presetFolder = Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments);
             parent = (MainForm)(this.MdiParent);
             parent.Cursor = Cursors.Default;
             d = new DataProvider();
@@ -50,82 +41,56 @@ namespace PiramidaAnalize
 
         private void LstPresets_DoubleClick(object sender, EventArgs e)
         {
-            string fileName;
             TreeNode[] found;
             if (lstPresets.SelectedIndex >= 0)
             {
                 this.Cursor = Cursors.WaitCursor;
                 treeObjects.CollapseAll();
-                fileName = Path.Combine(presetFolder, lstPresets.SelectedItem.ToString() + ".pst");
-                if (File.Exists(fileName))
+                mnuClearAll_Click(sender, e);
+                string[] sensorsList = d.ReadSensorsSet(lstPresets.Text);
+                if (sensorsList == null)
                 {
-                    mnuClearAll_Click(sender, e);
-                    selected = new List<string>(File.ReadAllLines(fileName).Where(s => s[0] != '#'));
-                    callTreeEventsRecursively = false;
-                    foreach (string node in selected)
-                    {
-                        found = treeObjects.Nodes.Find("S" + node, true);
-                        if (found.Length == 1)
-                            found[0].Checked = true;
-                    }
-                    found = treeObjects.Nodes.Find("S" + selected[0], true);
-                    if (found.Length == 1)
-                        found[0].EnsureVisible();
-                    txtSelected.Text = CountNodes(treeObjects.Nodes[0]).ToString();
-                    callTreeEventsRecursively = true;
+                    LoadPresets();
+                    return;
                 }
+                callTreeEventsRecursively = false;
+                foreach (string node in sensorsList)
+                {
+                    found = treeObjects.Nodes.Find(node, true);
+                    if (found.Length == 1)
+                        found[0].Checked = true;
+                }
+                found = treeObjects.Nodes.Find(sensorsList[0], true);
+                if (found.Length == 1)
+                    found[0].EnsureVisible();
+                txtSelected.Text = CountNodes(treeObjects.Nodes[0]).ToString();
+                callTreeEventsRecursively = true;
                 this.Cursor = Cursors.Default;
             }
         }
 
         private void BtnDeletePreset_Click(object sender, EventArgs e)
         {
-            string fileName;
             if (lstPresets.SelectedIndex >= 0)
-            {
-                fileName = Path.Combine(presetFolder, lstPresets.SelectedItem.ToString() + ".pst");
-                if (File.Exists(fileName))
-                {
-                    File.Delete(fileName);
-                    lstPresets.Items.RemoveAt(lstPresets.SelectedIndex);
-                }
-            }
+                d.DeleteSensorsSet(lstPresets.Text);
+            LoadPresets();
         }
 
         private void BtnSavePreset_Click(object sender, EventArgs e)
         {
             string presetName;
-            StringBuilder fileName;
-            string filePath;
             frmInputBox dlg = new frmInputBox("Введите название набора", "");
             if (dlg.ShowDialog(this) == DialogResult.OK)
             {
                 presetName = dlg.Result;
-                fileName = new StringBuilder(presetName.Length + 4);
-                foreach (char c in presetName)
-                    if (invalidChars.Contains(c))
-                        fileName.Append("_");
-                    else
-                        fileName.Append(c);
-                if (fileName.Length < 1)
-                    fileName.Append(DateTime.Now.ToString("yyyyMMdd_HHmmss"));
-                filePath = Path.Combine(presetFolder, fileName.ToString() + ".pst");
-                if (File.Exists(filePath))
-                {
-                    MessageBox.Show(this, "Набор с именем " + presetName + " уже существует" +
-                        Environment.NewLine + "Необходимо ввести уникальное название набора",
-                        "Такой набор уже существует", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-                selected = new List<string>(presetsComment);
-                selected.AddRange(d.GetSelectedSensors(treeObjects.Nodes[0]).Select(n => n.ToString()));
-                File.WriteAllLines(filePath, selected.ToArray());
-                lstPresets.Items.Add(fileName);
+                if (d.SaveSensorsSet(presetName, d.GetSelectedSensorsNodes(treeObjects.Nodes[0]).ToArray()))
+                    lstPresets.Items.Add(presetName);
             }
         }
         private void LoadPresets()
         {
-            string[] presets = Directory.EnumerateFiles(presetFolder, "*.pst").ToArray();
+            lstPresets.Items.Clear(); 
+            string[] presets = d.GetSensorSetsList();
             if (presets.Length > 0)
             {
                 foreach (string s in presets)
@@ -260,6 +225,16 @@ namespace PiramidaAnalize
             {
                 recursiveSelection(n, markChecked);
             }
+        }
+
+        private void btnRefreshPresets_Click(object sender, EventArgs e)
+        {
+            LoadPresets();
+        }
+
+        private void lstPresets_Enter(object sender, EventArgs e)
+        {
+            LoadPresets();
         }
     }
 }
