@@ -24,6 +24,47 @@ namespace PiramidaAnalize
             dtpMap.ValueChanged += DtpMap_ValueChanged;
             cmdGo.Click += CmdGo_Click;
             toolInterval.SelectedIndexChanged += ToolInterval_SelectedIndexChanged;
+            dgvMap.CellDoubleClick += DgvMap_CellDoubleClick;
+            treeObjects.NodeMouseDoubleClick += CmdGo_Click;
+        }
+
+        
+
+        private void DgvMap_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            string search = dgvMap[0, e.RowIndex].Value.ToString();
+            long deviceID = d.GetID(long.Parse(search));
+            TreeNode selected = treeObjects.SelectedNode;
+            if (selected.Nodes.Count > 0)
+            {
+                this.Cursor = Cursors.WaitCursor;
+                foreach (TreeNode n in selected.Nodes)
+                {
+                    if (n.Name == "F" + search || n.Name == "D" + deviceID.ToString())
+                    {
+                        treeObjects.SelectedNode = n;
+                        n.EnsureVisible();
+                        SetupMap();
+                        break;
+                    }
+                }
+                this.Cursor = Cursors.Default;
+            }
+            else if (selected.Name == "F0")
+            {
+                this.Cursor = Cursors.WaitCursor;
+                foreach (TreeNode n in treeObjects.Nodes)
+                {
+                    if (n.Name == "F" + search || n.Name == "D" + deviceID.ToString())
+                    {
+                        treeObjects.SelectedNode = n;
+                        n.EnsureVisible();
+                        SetupMap();
+                        break;
+                    }
+                }
+                this.Cursor = Cursors.Default;
+            }
         }
 
         private void CmdGo_Click(object sender, EventArgs e)

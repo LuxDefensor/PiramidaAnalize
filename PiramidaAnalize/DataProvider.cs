@@ -671,7 +671,7 @@ namespace PiramidaAnalize
                         c.Style.ForeColor = c.Style.BackColor;
                         c.ToolTipText = GetSingleHalfhour(deviceCode, sensorCode, 
                             day1.AddMinutes((c.ColumnIndex - 3) * 30)).ToString();
-                    }                
+                    }
             }
             cn.Close();
         }
@@ -973,7 +973,7 @@ namespace PiramidaAnalize
             foreach (TreeNode n in root.Nodes)
             {
                 if (n.Checked && n.Tag.ToString()[0] == 'S')
-                    result.Add(long.Parse(n.Tag.ToString().Substring(1, n.Tag.ToString().Length - 1)));
+                    result.Add(long.Parse(n.Tag.ToString().Substring(1)));
                 result.AddRange(GetSelectedSensors(n));
             }
             return result;

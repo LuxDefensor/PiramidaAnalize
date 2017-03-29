@@ -101,6 +101,7 @@
             this.dgvMap.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvMap.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvMap.Location = new System.Drawing.Point(303, 29);
+            this.dgvMap.MultiSelect = false;
             this.dgvMap.Name = "dgvMap";
             this.dgvMap.RowHeadersVisible = false;
             this.tableLayoutPanel1.SetRowSpan(this.dgvMap, 2);
