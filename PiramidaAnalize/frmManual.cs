@@ -16,7 +16,7 @@ namespace PiramidaAnalize
     {
         private DataProvider d;
         private MainForm parent;
-        private DateTime currentDate;
+        private DateTime selectedDate;
         private bool dataChanged;
         private long currentDevice = -1;
 
@@ -39,19 +39,19 @@ namespace PiramidaAnalize
             if (dataChanged)
             {
                 message.AppendLine("В таблице есть несохранённые изменения.");
-                message.AppendFormat("Обратите внимание, что они были сделаны для {0}.", currentDate.ToShortDateString());
+                message.AppendFormat("Обратите внимание, что они были сделаны для {0}.", selectedDate.ToShortDateString());
                 message.AppendLine();
                 message.Append("Вы уверены, что хотите выбрать другую дату?");
                 if (MessageBox.Show(message.ToString(), "Изменение даты",
                     MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.No)
                 {
-                    cal1.SelectionStart = currentDate;
+                    cal1.SelectionStart = selectedDate;
                     cal1.SelectionEnd = cal1.SelectionStart;
                     return;
                 }
             }
-            currentDate = e.Start;
-            txtDate.Text = currentDate.ToLongDateString();
+            selectedDate = e.Start;
+            txtDate.Text = selectedDate.ToLongDateString();
         }
 
         private void DgvData_KeyDown(object sender, KeyEventArgs e)
@@ -151,7 +151,7 @@ namespace PiramidaAnalize
             this.Refresh();
             parent = (MainForm)this.MdiParent;
             d.PopulateDevices(mainTree);
-            currentDate = cal1.SelectionStart;
+            selectedDate = cal1.SelectionStart;
             parent.Cursor = Cursors.Default;
         }
 
@@ -301,8 +301,8 @@ namespace PiramidaAnalize
                 }
             }
             dgvData.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
-            currentDate = cal1.SelectionStart;
-            txtDate.Text = currentDate.ToLongDateString();
+            selectedDate = cal1.SelectionStart;
+            txtDate.Text = selectedDate.ToLongDateString();
             this.Cursor = Cursors.Default;
         }
 
@@ -337,9 +337,9 @@ namespace PiramidaAnalize
                                         long.Parse(dgvData[0, row.Index].Value.ToString()), currentDate);
                                     dgvData[i, row.Index].Tag = null;
                                     dgvData[i, row.Index].Style.Font = new Font(dgvData.DefaultCellStyle.Font, FontStyle.Regular);
-                                }
-                            }
-                        }
+                                } // end of if (dgvData[i, row.Index].Tag.ToString() == "Update")
+                            } // end of if (dgvData[i, row.Index].Tag != null)
+                        } //  end of for (int i = 3; i < dgvData.ColumnCount; i++)
                         dgvData[2, row.Index].Style.Font = new Font(dgvData.DefaultCellStyle.Font, FontStyle.Regular);
                     }
                     else
@@ -349,7 +349,7 @@ namespace PiramidaAnalize
                             if (dgvData[6, row.Index].Tag.ToString() == "Update")
                             {
                                 d.WriteOneData(parent.WriterConnectionString, 101, deviceCode,
-                                    long.Parse(dgvData[0, row.Index].Value.ToString()), dateSave,
+                                    long.Parse(dgvData[0, row.Index].Value.ToString()), dateSave.Date,
                                     double.Parse(dgvData[6, row.Index].Value.ToString().Replace(',', '.'),
                                                  System.Globalization.CultureInfo.InvariantCulture.NumberFormat));
                                 dgvData[6, row.Index].Tag = null;
@@ -358,13 +358,13 @@ namespace PiramidaAnalize
                             else if (dgvData[6, row.Index].Tag.ToString() == "Clear")
                             {
                                 d.ClearOneData(parent.WriterConnectionString, 101, deviceCode,
-                                    long.Parse(dgvData[0, row.Index].Value.ToString()), dateSave);
+                                    long.Parse(dgvData[0, row.Index].Value.ToString()), dateSave.Date);
                                 dgvData[6, row.Index].Tag = null;
                                 dgvData[6, row.Index].Style.Font = new Font(dgvData.DefaultCellStyle.Font, FontStyle.Regular);
                             }
-                        }
-                    }
-                }
+                        } // end of if (dgvData[6, row.Index].Tag != null)
+                    } // end of if (parameter == 12)
+                } // end of foreach (DataGridViewRow row in dgvData.Rows)
             }
             catch (Exception ex)
             {
@@ -544,7 +544,7 @@ namespace PiramidaAnalize
                 }
             }
             if (currentDevice > 0)
-                SaveTable(currentDevice, (opt12.Checked) ? 12 : 101, currentDate);
+                SaveTable(currentDevice, (opt12.Checked) ? 12 : 101, selectedDate);
             dataChanged = false;
         }
 
@@ -672,7 +672,7 @@ namespace PiramidaAnalize
                     dgvExcel.Rows.Clear();
                 }
             }
-            txtDate.Text = currentDate.ToLongDateString();
+            txtDate.Text = selectedDate.ToLongDateString();
             dataChanged = true;
         }
 
@@ -710,7 +710,7 @@ namespace PiramidaAnalize
                 }
                 dgvData.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
             }
-            txtDate.Text = currentDate.ToLongDateString();
+            txtDate.Text = selectedDate.ToLongDateString();
             dataChanged = true;
         }
     }
