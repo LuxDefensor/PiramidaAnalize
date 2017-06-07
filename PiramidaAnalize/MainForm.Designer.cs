@@ -43,10 +43,7 @@ namespace PiramidaAnalize
             this.mnuPiramida = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuObjects = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuOutput = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuBalance = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuMap = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuAnalize = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuInput = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuTools = new System.Windows.Forms.ToolStripMenuItem();
             this.настройкаПодключенияToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuWindow = new System.Windows.Forms.ToolStripMenuItem();
@@ -92,10 +89,7 @@ namespace PiramidaAnalize
             this.mnuPiramida.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mnuObjects,
             this.mnuOutput,
-            this.mnuBalance,
-            this.mnuMap,
-            this.mnuAnalize,
-            this.mnuInput});
+            this.mnuMap});
             this.mnuPiramida.Name = "mnuPiramida";
             this.mnuPiramida.Size = new System.Drawing.Size(76, 20);
             this.mnuPiramida.Text = "&Пирамида";
@@ -103,44 +97,23 @@ namespace PiramidaAnalize
             // mnuObjects
             // 
             this.mnuObjects.Name = "mnuObjects";
-            this.mnuObjects.Size = new System.Drawing.Size(186, 22);
+            this.mnuObjects.Size = new System.Drawing.Size(152, 22);
             this.mnuObjects.Text = "&Объекты";
             this.mnuObjects.Click += new System.EventHandler(this.MnuObjectsClick);
             // 
             // mnuOutput
             // 
             this.mnuOutput.Name = "mnuOutput";
-            this.mnuOutput.Size = new System.Drawing.Size(186, 22);
+            this.mnuOutput.Size = new System.Drawing.Size(152, 22);
             this.mnuOutput.Text = "&Выгрузка";
             this.mnuOutput.Click += new System.EventHandler(this.mnuOutput_Click);
-            // 
-            // mnuBalance
-            // 
-            this.mnuBalance.Name = "mnuBalance";
-            this.mnuBalance.Size = new System.Drawing.Size(186, 22);
-            this.mnuBalance.Text = "&Балансы";
-            this.mnuBalance.Click += new System.EventHandler(this.mnuBalance_Click);
             // 
             // mnuMap
             // 
             this.mnuMap.Name = "mnuMap";
-            this.mnuMap.Size = new System.Drawing.Size(186, 22);
+            this.mnuMap.Size = new System.Drawing.Size(152, 22);
             this.mnuMap.Text = "&Карта сбора";
             this.mnuMap.Click += new System.EventHandler(this.mnuMap_Click);
-            // 
-            // mnuAnalize
-            // 
-            this.mnuAnalize.Name = "mnuAnalize";
-            this.mnuAnalize.Size = new System.Drawing.Size(186, 22);
-            this.mnuAnalize.Text = "&Анализ профиля";
-            this.mnuAnalize.Click += new System.EventHandler(this.MnuAnalizeClick);
-            // 
-            // mnuInput
-            // 
-            this.mnuInput.Name = "mnuInput";
-            this.mnuInput.Size = new System.Drawing.Size(186, 22);
-            this.mnuInput.Text = "&Ручной ввод данных";
-            this.mnuInput.Click += new System.EventHandler(this.mnuInput_Click);
             // 
             // mnuTools
             // 
@@ -220,10 +193,7 @@ namespace PiramidaAnalize
 		private System.Windows.Forms.ToolStripMenuItem mnuAbout;
 		private System.Windows.Forms.ToolStripMenuItem mnuHelp;
 		private System.Windows.Forms.ToolStripMenuItem mnuWindow;
-		private System.Windows.Forms.ToolStripMenuItem mnuInput;
-		private System.Windows.Forms.ToolStripMenuItem mnuAnalize;
 		private System.Windows.Forms.ToolStripMenuItem mnuMap;
-		private System.Windows.Forms.ToolStripMenuItem mnuBalance;
 		private System.Windows.Forms.ToolStripMenuItem mnuOutput;
 		private System.Windows.Forms.ToolStripMenuItem mnuObjects;
 		private System.Windows.Forms.ToolStripMenuItem mnuPiramida;
