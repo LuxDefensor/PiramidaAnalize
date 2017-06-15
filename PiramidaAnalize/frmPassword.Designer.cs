@@ -41,7 +41,7 @@
             this.txtPassword.Location = new System.Drawing.Point(74, 63);
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.Size = new System.Drawing.Size(263, 20);
-            this.txtPassword.TabIndex = 0;
+            this.txtPassword.TabIndex = 3;
             this.txtPassword.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.txtPassword.UseSystemPasswordChar = true;
             // 
@@ -51,7 +51,7 @@
             this.cmdOK.Location = new System.Drawing.Point(259, 102);
             this.cmdOK.Name = "cmdOK";
             this.cmdOK.Size = new System.Drawing.Size(78, 23);
-            this.cmdOK.TabIndex = 3;
+            this.cmdOK.TabIndex = 5;
             this.cmdOK.Text = "OK";
             this.cmdOK.UseVisualStyleBackColor = true;
             // 
@@ -61,7 +61,7 @@
             this.cmdCancel.Location = new System.Drawing.Point(175, 102);
             this.cmdCancel.Name = "cmdCancel";
             this.cmdCancel.Size = new System.Drawing.Size(78, 23);
-            this.cmdCancel.TabIndex = 2;
+            this.cmdCancel.TabIndex = 4;
             this.cmdCancel.Text = "Отмена";
             this.cmdCancel.UseVisualStyleBackColor = true;
             // 
@@ -79,7 +79,7 @@
             this.label1.Location = new System.Drawing.Point(15, 28);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(38, 13);
-            this.label1.TabIndex = 4;
+            this.label1.TabIndex = 0;
             this.label1.Text = "Логин";
             // 
             // label2
@@ -88,7 +88,7 @@
             this.label2.Location = new System.Drawing.Point(15, 66);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(45, 13);
-            this.label2.TabIndex = 5;
+            this.label2.TabIndex = 2;
             this.label2.Text = "Пароль";
             // 
             // frmPassword

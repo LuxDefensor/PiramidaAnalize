@@ -305,11 +305,13 @@ namespace PiramidaAnalize
             if (cn.State != ConnectionState.Open)
                 cn.Open();
 			StringBuilder sql=new StringBuilder();
-			sql.Append("select sensors.id,sensors.code,subdevices.name,sensors.name ");
+			sql.Append("select sensors.id,sensors.code,subdevices.name,sensors.name,ktr.koef ");
 			sql.Append("from sensors left join subdevices ");
 			sql.Append("on sensors.subdeviceid=subdevices.id ");
+            sql.Append("left join ktr on sensors.id=ktr.sensorid ");
 			sql.Append("where sensors.stationid=");
 			sql.Append(deviceID.ToString());
+            sql.Append(" order by sensors.code");
             cmdSensors = cn.CreateCommand();
 			cmdSensors.CommandText=sql.ToString();			
 			SqlDataAdapter daSensors=new SqlDataAdapter(cmdSensors);
@@ -318,9 +320,14 @@ namespace PiramidaAnalize
 			grid.DataSource=dsSensors;	
 			grid.DataMember=dsSensors.Tables[0].TableName;
             grid.Columns[1].HeaderText = "Код";
+            grid.Columns[1].ReadOnly = true;
             grid.Columns[2].HeaderText = "Подустройство";
+            grid.Columns[2].ReadOnly = true;
             grid.Columns[3].HeaderText = "Канал учёта";
-			grid.AutoResizeColumns();
+            grid.Columns[3].ReadOnly = true;
+            grid.Columns[4].HeaderText = "Ктр";
+            grid.Columns[4].ReadOnly = false;
+            grid.AutoResizeColumns();
 			cn.Close();
 		}
 
@@ -1467,6 +1474,47 @@ namespace PiramidaAnalize
         #endregion
 
         #region Запись данных в базу
+
+        public bool WriteKtr(string writeConnectionString, int sensorID, double newKtr)
+        {
+            bool result = true;
+            object existing;
+            using (SqlConnection cn = new SqlConnection(writeConnectionString))
+            {
+                cn.Open();
+                SqlCommand cmd = cn.CreateCommand();
+                cmd.CommandText = "SELECT Count(*) FROM Ktr WHERE SensorID=" + sensorID;
+                try
+                {
+                    existing = cmd.ExecuteScalar();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Не удалось получить информацию о Ктр", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+                StringBuilder sql = new StringBuilder(100);
+                if ((int)existing == 0)
+                {
+                    sql.AppendFormat("INSERT INTO Ktr (SensorID,Koef) Values ({0},{1})", sensorID, newKtr.ToString().Replace(',', '.'));
+                }
+                else
+                {
+                    sql.AppendFormat("UPDATE Ktr SET Koef={0} WHERE SensorID={1}", newKtr.ToString().Replace(',', '.'), sensorID);
+                }
+                cmd.CommandText = sql.ToString();
+                try
+                {
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Ошибка функции записи Ктр в БД", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+            }
+            return result;
+        }
 
         /// <summary>
         /// Записывает в БД Piramida2000 одно значение путём выполнения хранимой процедуры

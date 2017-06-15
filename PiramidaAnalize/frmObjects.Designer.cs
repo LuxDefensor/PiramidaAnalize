@@ -112,8 +112,7 @@ namespace PiramidaAnalize
             this.dgvSensors.Location = new System.Drawing.Point(3, 3);
             this.dgvSensors.MultiSelect = false;
             this.dgvSensors.Name = "dgvSensors";
-            this.dgvSensors.ReadOnly = true;
-            this.dgvSensors.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvSensors.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
             this.dgvSensors.Size = new System.Drawing.Size(584, 479);
             this.dgvSensors.TabIndex = 0;
             // 

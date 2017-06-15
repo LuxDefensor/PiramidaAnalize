@@ -26,6 +26,7 @@ namespace PiramidaAnalize
 
         private DataProvider d;
         private MainForm parent;
+        private bool inintialized = false;
 		
 		public frmObjects()
 		{
@@ -64,7 +65,45 @@ namespace PiramidaAnalize
             opt12.CheckedChanged += Opt12_CheckedChanged;
             opt101.CheckedChanged += Opt101_CheckedChanged;
             calMap.DateChanged += CalMap_DateChanged;
+            dgvSensors.CellValueChanged += DgvSensors_CellValueChanged;
+            dgvSensors.DataError += DgvSensors_DataError;
 		}
+
+        private void DgvSensors_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            e.Cancel = true;
+            MessageBox.Show(e.Exception.Message, "Введено неверное значение", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        private void DgvSensors_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex == 4 && inintialized)
+            {
+                if (parent.WriterConnectionString == string.Empty)
+                {
+                    if (!parent.GetWriterAccess())
+                    {
+                        MessageBox.Show("Недостаточно прав для изменения коэффициента трансформации\n" +
+                            "Обратитесь к администратору системы", "Вы не можете вводить данные вручную",
+                            MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                        return;
+                    }
+                }
+                if (!d.TestWriter(parent.WriterConnectionString))
+                {
+                    MessageBox.Show("Недостаточно прав для изменения коэффициента трансформации\n" +
+                        "Обратитесь к администратору системы", "Вы не можете вводить данные вручную",
+                        MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                    return;
+                }
+                if (!d.WriteKtr(parent.WriterConnectionString, 
+                    (int)dgvSensors[0, e.RowIndex].Value, 
+                    (double)dgvSensors[4, e.RowIndex].Value))
+                {
+                    CmdRefresh_Click(sender, new EventArgs());
+                }
+            }
+        }
 
         private void CmdRefresh_Click(object sender, EventArgs e)
         {
@@ -151,7 +190,9 @@ namespace PiramidaAnalize
 
                         if (mainTree.SelectedNode.Tag.ToString().Substring(0, 1) == "D")
                         {
+                            inintialized = false;
                             d.FillSensors(dgvSensors, deviceID);
+                            inintialized = true;
                         }
                         else
                         {
