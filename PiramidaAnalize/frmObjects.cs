@@ -180,7 +180,7 @@ namespace PiramidaAnalize
             long deviceID, deviceCode;
             long.TryParse(stringDeviceID, out deviceID);
             deviceCode = d.GetCode(deviceID);
-            txtDeviceCode.Text = deviceCode.ToString();
+            txtDeviceCode.Text = string.Format("{0}   ({0:X})", deviceCode);
             txtDate.Text = calMap.SelectionStart.ToShortDateString();
             txtDeviceID.Text = stringDeviceID;
             switch (tabIndex)
@@ -410,5 +410,6 @@ namespace PiramidaAnalize
             }
             return result;
         }
+
     }
 }
