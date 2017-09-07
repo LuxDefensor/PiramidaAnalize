@@ -634,6 +634,7 @@ namespace PiramidaAnalize
                 cn.Open();
             cmdDevices = cn.CreateCommand();
             cmdDevices.CommandText = sql.ToString();
+            cmdDevices.CommandTimeout = 120;
             SqlDataAdapter daDevices = new SqlDataAdapter(cmdDevices);
             DataSet dsDevices = new DataSet();
             daDevices.Fill(dsDevices);
